@@ -68,6 +68,18 @@ if __name__ == "__main__":
           )
           db.session.add(student_reports)
 
+    def create_course_reports():
+      courses = Course.query.all()
+      for course in courses:
+        report = CourseReport(
+          course_id = course.id,
+          user_id = course.users[0].id,
+          content = "Write your report here",
+          date = datetime.now(),
+          approved = False
+        )
+        course.course_reports.append(report)
+
     print("Clearing database...")
     db.session.query(User).delete()
     db.session.query(Role).delete()
@@ -160,6 +172,10 @@ if __name__ == "__main__":
     create_user_role_assignments()
     db.session.commit()
 
-    print("Creating suggestions...")
+    print("Creating student reports...")
     create_student_reports()
+    db.session.commit()
+
+    print("Creating course reports...")
+    create_course_reports()
     db.session.commit()
