@@ -80,6 +80,25 @@ if __name__ == "__main__":
         )
         course.course_reports.append(report)
 
+    def create_placements():
+      students = Student.query.all()
+      for student in students:
+        for course in student.courses:
+          new_course = None
+          if course.level.name != "Elementary" and course.level.name != "Middle/High School":
+            if course.level.name != "8":
+              new_course = Course.query.filter_by(name = f'{course.discipline.name} {(int(course.level.name) + 1)}').first()
+            else:
+              new_course = course
+          else:
+            new_course = course
+          placement = Placement(
+            student_id = student.id,
+            course_id = new_course.id,
+            date = datetime.now()
+          )
+          db.session.add(placement)
+
     print("Clearing database...")
     db.session.query(User).delete()
     db.session.query(Role).delete()
@@ -178,4 +197,8 @@ if __name__ == "__main__":
 
     print("Creating course reports...")
     create_course_reports()
+    db.session.commit()
+
+    print("Creating placements...")
+    create_placements()
     db.session.commit()
