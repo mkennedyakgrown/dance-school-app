@@ -39,6 +39,13 @@ if __name__ == "__main__":
           student = choice(students)
           student.courses.append(course)
 
+    def create_instructor_assignments():
+      instructors = User.query.all()
+      courses = Course.query.all()
+      for course in courses:
+        for i in range(choice([1,2])):
+          course.users.append(choice(instructors))
+
     print("Clearing database...")
     db.session.query(User).delete()
     db.session.query(Role).delete()
@@ -121,4 +128,8 @@ if __name__ == "__main__":
 
     print ("Assigning students to courses...")
     create_enrollment()
+    db.session.commit()
+
+    print("Assigning instructors to courses...")
+    create_instructor_assignments()
     db.session.commit()
