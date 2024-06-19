@@ -15,10 +15,16 @@ if __name__ == "__main__":
 
     def create_roles():
       roles = [
-        Role(name="Teacher", description="Can edit reports"),
+        Role(name="Instructor", description="Can edit reports"),
         Role(name="Admin", description="Full access, create, and edit all data")
       ]
       db.session.add_all(roles)
+
+    def create_user_role_assignments():
+      users = User.query.all()
+      roles = Role.query.all()
+      for user in users:
+        user.roles.append(choice(roles))
 
     def create_student():
       student = Student(
@@ -133,3 +139,9 @@ if __name__ == "__main__":
     print("Assigning instructors to courses...")
     create_instructor_assignments()
     db.session.commit()
+
+    print("Assigning roles to users...")
+    create_user_role_assignments()
+    db.session.commit()
+
+    
