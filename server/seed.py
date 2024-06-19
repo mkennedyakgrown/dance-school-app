@@ -2,6 +2,7 @@ from config import app, db
 from models import User, Role, Course, Discipline, Level, Student, Gender, StudentReport, CourseReport, Placement, Suggestion, Template, Email
 from random import choice
 from faker import Faker
+from datetime import datetime
 
 fake = Faker()
 
@@ -52,6 +53,21 @@ if __name__ == "__main__":
         for i in range(choice([1,2])):
           course.users.append(choice(instructors))
 
+    def create_student_reports():
+      students = Student.query.all()
+      courses = Course.query.all()
+      for student in students:
+        for course in courses:
+          student_reports = StudentReport(
+            student_id=student.id,
+            user_id=course.users[0].id,
+            course_id=course.id,
+            content="Write your report here",
+            date=datetime.now(),
+            approved=False
+          )
+          db.session.add(student_reports)
+
     print("Clearing database...")
     db.session.query(User).delete()
     db.session.query(Role).delete()
@@ -70,7 +86,7 @@ if __name__ == "__main__":
 
     print("Creating users...")
     for i in range(10):
-      create_user(fake.first_name(), fake.last_name(), fake.email(), fake.password(length=10))
+      create_user(fake.first_name(), fake.last_name(), fake.email(), "password")
 
     print("Creating roles...")
     create_roles()
@@ -144,4 +160,6 @@ if __name__ == "__main__":
     create_user_role_assignments()
     db.session.commit()
 
-    
+    print("Creating suggestions...")
+    create_student_reports()
+    db.session.commit()
