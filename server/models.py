@@ -11,8 +11,8 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(20), unique=True, nullable=False)
-    last_name = db.Column(db.String(20), unique=True, nullable=False)
+    first_name = db.Column(db.String(20), nullable=False)
+    last_name = db.Column(db.String(20), nullable=False)
     email_address = db.Column(db.String(20), unique=True, nullable=False)
     password_hash = db.Column(db.String(60), nullable=False)
 
@@ -133,14 +133,14 @@ class Suggestion(db.Model, SerializerMixin):
     level_id = db.Column(db.Integer, db.ForeignKey('levels.id'), nullable=True)
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True)
 
-class Templates(db.Model, SerializerMixin):
+class Template(db.Model, SerializerMixin):
     __tablename__ = 'templates'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
     content = db.Column(db.Text, nullable=False)
 
-class Emails(db.Model, SerializerMixin):
+class Email(db.Model, SerializerMixin):
     __tablename__ = 'emails'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -152,7 +152,7 @@ class Emails(db.Model, SerializerMixin):
 
     student = db.relationship('Student', backref='emails')
 
-    
+
 
 users_roles = db.Table('users_roles',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
