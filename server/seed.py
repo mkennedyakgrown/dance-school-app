@@ -13,6 +13,7 @@ if __name__ == "__main__":
       user = User(first_name=first_name, last_name=last_name, email_address=email_address)
       user.password_hash = password
       db.session.add(user)
+      db.session.commit()
 
     def create_roles():
       roles = [

@@ -14,12 +14,73 @@ class User(db.Model, SerializerMixin):
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
     email_address = db.Column(db.String(20), unique=True, nullable=False)
-    password_hash = db.Column(db.String(60), nullable=False)
+    _password_hash = db.Column(db.String(60), nullable=False)
 
     roles = db.relationship('Role', secondary='users_roles', back_populates='users')
     courses = db.relationship('Course', secondary='users_courses', back_populates='users')
     student_reports = db.relationship('StudentReport', back_populates='user')
     course_reports = db.relationship('CourseReport', back_populates='user')
+
+    @validates('first_name')
+    def validate_first_name(self, key, first_name):
+        if not first_name:
+            raise AssertionError('User must have a first name')
+        if not search('[a-zA-Z]', first_name):
+            raise AssertionError('User first name must only contain letters')
+        if len(first_name) > 20:
+            raise AssertionError('User first name must be less than 20 characters')
+        if len(first_name) < 2:
+            raise AssertionError('User first name must be at least 2 characters')
+        if ' ' in first_name:
+            raise AssertionError('User first name must not contain spaces')
+        return first_name
+
+    @validates('last_name')
+    def validate_last_name(self, key, last_name):
+        if not last_name:
+            raise AssertionError('User must have a last name')
+        if not search('[a-zA-Z]', last_name):
+            raise AssertionError('User last name must only contain letters')
+        if len(last_name) > 20:
+            raise AssertionError('User last name must be less than 20 characters')
+        if len(last_name) < 2:
+            raise AssertionError('User last name must be at least 2 characters')
+        if ' ' in last_name:
+            raise AssertionError('User last name must not contain spaces')
+        return last_name
+
+    @validates('email_address')
+    def validate_email_address(self, key, email_address):
+        if not email_address:
+            raise AssertionError('User must have an email address')
+        if not search('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', email_address):
+            raise AssertionError('User email address must be valid')
+        if len(email_address) > 30:
+            raise AssertionError('User email address must be less than 30 characters')
+        if ' ' in email_address:
+            raise AssertionError('User email address must not contain spaces')
+        return email_address
+    
+    @hybrid_property
+    def full_name(self):
+        return f'{self.first_name} {self.last_name}'
+
+    @hybrid_property
+    def password_hash(self):
+        raise AttributeError('Password hash may not be viewed')
+    
+    @password_hash.setter
+    def password_hash(self, password):
+        password_hash = bcrypt.generate_password_hash(
+            password.encode('utf-8'))
+        self._password_hash = password_hash.decode('utf-8')
+
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(
+            self.password_hash, password.encode('utf-8'))
+    
+    def __repr__(self):
+        return f'<User {self.first_name} {self.last_name}>'
 
 class Role(db.Model, SerializerMixin):
     __tablename__ = 'roles'
@@ -130,7 +191,7 @@ class Suggestion(db.Model, SerializerMixin):
     __tablename__ = 'suggestions'
 
     id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     discipline_id = db.Column(db.Integer, db.ForeignKey('disciplines.id'), nullable=True)
     level_id = db.Column(db.Integer, db.ForeignKey('levels.id'), nullable=True)
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True)
