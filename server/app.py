@@ -9,9 +9,11 @@ from models import User, Role, Course, Discipline, Level, Student, Gender, Stude
 class Login(Resource):
 
   def post(self):
-    username = request.get_json()['username']
-    user = User.query.filter(User.username == username).first()
-    password = request.get_json()['password']
+    json = request.get_json()
+    email_address = json.get('email_address')
+    user = User.query.filter(User.email_address == email_address).first()
+    print(user)
+    password = json.get('password')
     if user is not None and user.authenticate(password) == True:
         session['user_id'] = user.id
         return user_schema.dump(user), 200
