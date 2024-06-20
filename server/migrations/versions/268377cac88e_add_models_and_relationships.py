@@ -137,7 +137,7 @@ def upgrade():
     )
     op.create_table('suggestions',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('course_id', sa.Integer(), nullable=True),
+    sa.Column('course_id', sa.Integer(), nullable=False),
     sa.Column('discipline_id', sa.Integer(), nullable=True),
     sa.Column('level_id', sa.Integer(), nullable=True),
     sa.Column('gender_id', sa.Integer(), nullable=True),
