@@ -334,7 +334,10 @@ class SuggestionById(Resource):
 class Courses(Resource):
 
   def get(self):
-    return courses_schema.dump(Course.query.all()), 200
+    offset = request.args.get('offset', 0, type=int)
+    limit = request.args.get('limit', 100, type=int)
+    courses = Course.query.offset(offset).limit(limit).all()
+    return courses_schema.dump(courses), 200
   
   def post(self):
     json = request.get_json()
@@ -377,7 +380,10 @@ class CourseById(Resource):
 class Students(Resource):
 
   def get(self):
-    return students_schema.dump(Student.query.all()), 200
+    offset = request.args.get('offset', 0, type=int)
+    limit = request.args.get('limit', 100, type=int)
+    students = Student.query.offset(offset).limit(limit).all()
+    return students_schema.dump(students), 200
   
   def post(self):
     json = request.get_json()
@@ -719,7 +725,7 @@ class StudentSchema(ma.SQLAlchemySchema):
   secondary_email_address = ma.auto_field()
   birth_date = ma.auto_field()
   gender = ma.auto_field()
-  courses = fields.Nested('CourseSchema', exclude=['students'], many=True)
+  courses = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level', 'users'], many=True)
   student_reports = fields.Nested('StudentReportSchema', exclude=['student'], many=True)
   email = fields.Nested('EmailSchema', exclude=['student'], many=False)
   placements = fields.Nested('PlacementSchema', exclude=['student'], many=True)
@@ -749,7 +755,7 @@ class StudentReportSchema(ma.SQLAlchemySchema):
   id = ma.auto_field()
   student = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=False)
   course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
-  user = fields.Nested('UserSchema', exclude=['student_reports'], many=False)
+  user = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=False)
   content = ma.auto_field()
   date = ma.auto_field()
   approved = ma.auto_field()
@@ -765,7 +771,7 @@ class CourseReportSchema(ma.SQLAlchemySchema):
 
   id = ma.auto_field()
   course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
-  user = fields.Nested('UserSchema', exclude=['course_reports'], many=False)
+  user = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=False)
   content = ma.auto_field()
   date = ma.auto_field()
   approved = ma.auto_field()
@@ -781,7 +787,7 @@ class PlacementSchema(ma.SQLAlchemySchema):
 
   id = ma.auto_field()
   student = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=False)
-  course = fields.Nested('CourseSchema', exclude=['placements'], many=False)
+  course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
   date = ma.auto_field()
 
 placement_schema = PlacementSchema()
@@ -822,7 +828,7 @@ class EmailSchema(ma.SQLAlchemySchema):
     load_instance = True
 
   id = ma.auto_field()
-  student = fields.Nested('StudentSchema', exclude=['email'], many=False)
+  student = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=False)
   email_address = ma.auto_field()
   secondary_email_address = ma.auto_field()
   content = ma.auto_field()
