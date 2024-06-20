@@ -1,6 +1,7 @@
 from flask import request, session
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
+from marshmallow import fields
 
 from config import app, db, api, ma
 from models import User, Role, Course, Discipline, Level, Student, Gender, StudentReport, CourseReport, Placement, Suggestion, Template, Email
@@ -629,13 +630,197 @@ class UserSchema(ma.SQLAlchemySchema):
   first_name = ma.auto_field()
   last_name = ma.auto_field()
   email_address = ma.auto_field()
-  roles = ma.auto_field()
-  courses = ma.auto_field()
-  student_reports = ma.auto_field()
-  course_reports = ma.auto_field()
+  roles = fields.Nested('RoleSchema', exclude=['users'], many=True)
+  courses = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=True)
+  student_reports = fields.Nested('StudentReportSchema', only=['id', 'student', 'course', 'content', 'date', 'approved'], many=True)
+  course_reports = fields.Nested('CourseReportSchema', only=['id', 'course', 'content', 'date', 'approved'], many=True)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
+
+class RoleSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Role
+    load_instance = True
+
+  id = ma.auto_field()
+  name = ma.auto_field()
+  description = ma.auto_field()
+  users = fields.Nested('UserSchema', exclude=['roles'], many=True)
+
+role_schema = RoleSchema()
+roles_schema = RoleSchema(many=True)
+
+class CourseSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Course
+    load_instance = True
+
+  id = ma.auto_field()
+  name = ma.auto_field()
+  discipline = fields.Nested('DisciplineSchema', exclude=['courses'], many=False)
+  level = fields.Nested('LevelSchema', exclude=['courses'], many=False)
+  users = fields.Nested('UserSchema', exclude=['courses'], many=True)
+  students = fields.Nested('StudentSchema', exclude=['courses'], many=True)
+  course_reports = fields.Nested('CourseReportSchema', exclude=['course'], many=True)
+  student_reports = fields.Nested('StudentReportSchema', exclude=['course'], many=True)
+  placements = fields.Nested('PlacementSchema', exclude=['course'], many=True)
+
+course_schema = CourseSchema()
+courses_schema = CourseSchema(many=True)
+
+class DisciplineSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Discipline
+    load_instance = True
+
+  id = ma.auto_field()
+  name = ma.auto_field()
+  courses = fields.Nested('CourseSchema', exclude=['discipline'], many=True)
+
+discipline_schema = DisciplineSchema()
+disciplines_schema = DisciplineSchema(many=True)
+
+class LevelSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Level
+    load_instance = True
+
+  id = ma.auto_field()
+  name = ma.auto_field()
+  courses = fields.Nested('CourseSchema', exclude=['level'], many=True)
+
+level_schema = LevelSchema()
+levels_schema = LevelSchema(many=True)
+
+class StudentSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Student
+    load_instance = True
+
+  id = ma.auto_field()
+  first_name = ma.auto_field()
+  last_name = ma.auto_field()
+  email_address = ma.auto_field()
+  secondary_email_address = ma.auto_field()
+  birth_date = ma.auto_field()
+  gender = ma.auto_field()
+  courses = fields.Nested('CourseSchema', exclude=['students'], many=True)
+  student_reports = fields.Nested('StudentReportSchema', exclude=['student'], many=True)
+  email = fields.Nested('EmailSchema', exclude=['student'], many=False)
+  placements = fields.Nested('PlacementSchema', exclude=['student'], many=True)
+
+student_schema = StudentSchema()
+students_schema = StudentSchema(many=True)
+
+class GenderSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Gender
+    load_instance = True
+
+  id = ma.auto_field()
+  name = ma.auto_field()
+  students = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name'], many=True)
+
+gender_schema = GenderSchema()
+genders_schema = GenderSchema(many=True)
+
+class StudentReportSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = StudentReport
+    load_instance = True
+
+  id = ma.auto_field()
+  student = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=False)
+  course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
+  user = fields.Nested('UserSchema', exclude=['student_reports'], many=False)
+  content = ma.auto_field()
+  date = ma.auto_field()
+  approved = ma.auto_field()
+
+student_report_schema = StudentReportSchema()
+student_reports_schema = StudentReportSchema(many=True)
+
+class CourseReportSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = CourseReport
+    load_instance = True
+
+  id = ma.auto_field()
+  course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
+  user = fields.Nested('UserSchema', exclude=['course_reports'], many=False)
+  content = ma.auto_field()
+  date = ma.auto_field()
+  approved = ma.auto_field()
+
+course_report_schema = CourseReportSchema()
+course_reports_schema = CourseReportSchema(many=True)
+
+class PlacementSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Placement
+    load_instance = True
+
+  id = ma.auto_field()
+  student = fields.Nested('StudentSchema', exclude=['placements'], many=False)
+  course = fields.Nested('CourseSchema', exclude=['placements'], many=False)
+  date = ma.auto_field()
+
+placement_schema = PlacementSchema()
+placements_schema = PlacementSchema(many=True)
+
+class SuggestionSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Suggestion
+    load_instance = True
+
+  id = ma.auto_field()
+  course = fields.Nested('CourseSchema', exclude=['suggestions'], many=False)
+  discipline = fields.Nested('DisciplineSchema', exclude=['suggestions'], many=False)
+  level = fields.Nested('LevelSchema', exclude=['suggestions'], many=False)
+  gender = fields.Nested('GenderSchema', exclude=['suggestions'], many=False)
+
+suggestion_schema = SuggestionSchema()
+suggestions_schema = SuggestionSchema(many=True)
+
+class TemplateSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Template
+    load_instance = True
+
+  id = ma.auto_field()
+  name = ma.auto_field()
+  content = ma.auto_field()
+
+template_schema = TemplateSchema()
+templates_schema = TemplateSchema(many=True)
+
+class EmailSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = Email
+    load_instance = True
+
+  id = ma.auto_field()
+  student = fields.Nested('StudentSchema', exclude=['email'], many=False)
+  email_address = ma.auto_field()
+  secondary_email_address = ma.auto_field()
+  content = ma.auto_field()
+  date = ma.auto_field()
+
+email_schema = EmailSchema()
+emails_schema = EmailSchema(many=True)
 
 if __name__ == "__main__":
   app.run(port=5555, debug=True)

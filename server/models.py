@@ -21,8 +21,6 @@ class User(db.Model, SerializerMixin):
     student_reports = db.relationship('StudentReport', back_populates='user')
     course_reports = db.relationship('CourseReport', back_populates='user')
 
-    # serialize_rules = ('-courses', '-student_reports', '-course_reports', '-password_hash')
-
     @validates('first_name')
     def validate_first_name(self, key, first_name):
         if not first_name:
@@ -92,8 +90,6 @@ class Role(db.Model, SerializerMixin):
     description = db.Column(db.String(200), nullable=False)
 
     users = db.relationship('User', secondary='users_roles', back_populates='roles')
-
-    serialize_rules = ('-users',)
 
     @validates('name')
     def validate_name(self, key, name):
@@ -249,6 +245,10 @@ class Student(db.Model, SerializerMixin):
         if ' ' in email_address:
             raise AssertionError('User email address must not contain spaces')
         return email_address
+    
+    @hybrid_property
+    def name(self):
+        return f'{self.first_name} {self.last_name}'
 
 class Gender(db.Model, SerializerMixin):
     __tablename__ = 'genders'
