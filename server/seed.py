@@ -99,6 +99,26 @@ if __name__ == "__main__":
           )
           db.session.add(placement)
 
+    def create_suggestions():
+      disciplines = Discipline.query.all()
+      for discipline in disciplines:
+        elementary_level = Level.query.filter_by(name="Elementary").first()
+        middle_high_level = Level.query.filter_by(name="Middle/High School").first()
+        elementary_suggestion = Suggestion(
+          course_id = Course.query.filter_by(discipline=discipline, level=elementary_level).first().id,
+          discipline_id = discipline.id,
+          level_id = elementary_level.id
+        )
+        db.session.add(elementary_suggestion)
+        middle_high_suggestion = Suggestion(
+          course_id = Course.query.filter_by(discipline=discipline, level=middle_high_level).first().id,
+          discipline_id = discipline.id,
+          level_id = middle_high_level.id
+        )
+        db.session.add(middle_high_suggestion)
+
+
+
     print("Clearing database...")
     db.session.query(User).delete()
     db.session.query(Role).delete()
@@ -201,4 +221,8 @@ if __name__ == "__main__":
 
     print("Creating placements...")
     create_placements()
+    db.session.commit()
+
+    print("Creating suggestions...")
+    create_suggestions()
     db.session.commit()
