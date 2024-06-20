@@ -14,7 +14,7 @@ class Login(Resource):
     password = request.get_json()['password']
     if user is not None and user.authenticate(password) == True:
         session['user_id'] = user.id
-        return user.to_dict(), 200
+        return user_schema.dump(user), 200
     else:
         return {'message': 'Username and password do not match any users'}, 401
     
@@ -33,7 +33,7 @@ class CheckSession(Resource):
     user_id = session['user_id']
     if user_id:
         user = User.query.filter(User.id == user_id).first()
-        return user.to_dict(), 200
+        return user_schema.dump(user), 200
     else:
         return {'message': 'You are not logged in'}, 401
       
@@ -82,7 +82,7 @@ class UserById(Resource):
     db.session.commit()
 
     user = User.query.filter(User.id == user.id).first()
-    return user.to_dict(), 200
+    return user_schema.dump(user), 200
 
   def delete(self, user_id):
     user = User.query.filter(User.id == user_id).first()
@@ -95,7 +95,7 @@ class UserById(Resource):
 class Roles(Resource):
 
   def get(self):
-    return [role.to_dict() for role in Role.query.all()], 200
+    return roles_schema.dump(Role.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -106,7 +106,7 @@ class Roles(Resource):
     try:
         db.session.add(role)
         db.session.commit()
-        return role.to_dict(), 201
+        return role_schema.dump(role), 201
     except IntegrityError:
         return {'message': 'Error creating role'}, 422
       
@@ -114,7 +114,7 @@ class RoleById(Resource):
    
   def get(self, role_id):
     role = Role.query.filter(Role.id == role_id).first()
-    return role.to_dict(), 200
+    return role_schema.dump(role), 200
   
   def patch(self, role_id):
     role = Role.query.filter(Role.id == role_id).first()
@@ -124,7 +124,7 @@ class RoleById(Resource):
     if json.get('description'):
       role.description = json.get('description')
     db.session.commit()
-    return role.to_dict(), 200
+    return role_schema.dump(role), 200
   
   def delete(self, role_id):
     role = Role.query.filter(Role.id == role_id).first()
@@ -136,7 +136,7 @@ class CourseReports(Resource):
    
   def get(self, course_id):
     course = Course.query.filter(Course.id == course_id).first()
-    return [report.to_dict() for report in course.reports], 200
+    return course_reports_schema.dump(course.reports), 200
   
   def post(self, course_id):
     json = request.get_json()
@@ -151,7 +151,7 @@ class CourseReports(Resource):
     try:
         db.session.add(report)
         db.session.commit()
-        return report.to_dict(), 201
+        return course_report_schema.dump(report), 201
     except IntegrityError:
         return {'message': 'Error creating report'}, 422
       
@@ -159,7 +159,7 @@ class StudentReports(Resource):
    
   def get(self, student_id):
     student = Student.query.filter(Student.id == student_id).first()
-    return [report.to_dict() for report in student.reports], 200
+    return student_reports_schema.dump(student.reports), 200
   
   def post(self, student_id):
     json = request.get_json()
@@ -175,7 +175,7 @@ class StudentReports(Resource):
     try:
         db.session.add(report)
         db.session.commit()
-        return report.to_dict(), 201
+        return student_report_schema.dump(report), 201
     except IntegrityError:
         return {'message': 'Error creating report'}, 422
     
@@ -183,20 +183,20 @@ class CourseReportsByInstructor(Resource):
    
   def get(self, course_id):
     course = Course.query.filter(Course.id == course_id).first()
-    return [report.to_dict() for report in course.reports], 200
+    return course_reports_schema.dump(course.reports), 200
   
 class StudentReportsByInstructor(Resource):
    
   def get(self, student_id):
     student = Student.query.filter(Student.id == student_id).first()
-    return [report.to_dict() for report in student.reports], 200
+    return student_reports_schema.dump(student.reports), 200
   
 class CourseReportById(Resource):
    
   def get(self, course_id, report_id):
     course = Course.query.filter(Course.id == course_id).first()
     report = course.reports.filter(CourseReport.id == report_id).first()
-    return report.to_dict(), 200
+    return course_report_schema.dump(report), 200
   
   def patch(self, course_id, report_id):
     course = Course.query.filter(Course.id == course_id).first()
@@ -209,7 +209,7 @@ class CourseReportById(Resource):
     if json.get('approved'):
       report.approved = json.get('approved')
     db.session.commit()
-    return report.to_dict(), 200
+    return course_report_schema.dump(report), 200
   
   def delete(self, course_id, report_id):
     course = Course.query.filter(Course.id == course_id).first()
@@ -223,7 +223,7 @@ class StudentReportById(Resource):
   def get(self, student_id, report_id):
     student = Student.query.filter(Student.id == student_id).first()
     report = student.reports.filter(StudentReport.id == report_id).first()
-    return report.to_dict(), 200
+    return student_report_schema.dump(report), 200
   
   def patch(self, student_id, report_id):
     student = Student.query.filter(Student.id == student_id).first()
@@ -236,7 +236,7 @@ class StudentReportById(Resource):
     if json.get('approved'):
       report.approved = json.get('approved')
     db.session.commit()
-    return report.to_dict(), 200
+    return student_report_schema.dump(report), 200
   
   def delete(self, student_id, report_id):
     student = Student.query.filter(Student.id == student_id).first()
@@ -247,9 +247,8 @@ class StudentReportById(Resource):
   
 class Placements(Resource):
 
-  def get(self, course_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    return [placement.to_dict() for placement in course.placements], 200
+  def get(self):
+    return placements_schema.dump(), 200
 
   def post(self, course_id):
     json = request.get_json()
@@ -262,7 +261,7 @@ class Placements(Resource):
     try:
         db.session.add(placement)
         db.session.commit()
-        return placement.to_dict(), 201
+        return placement_schema.dump(placement), 201
     except IntegrityError:
         return {'message': 'Error creating placement'}, 422
     
@@ -271,7 +270,7 @@ class PlacementById(Resource):
   def get(self, course_id, placement_id):
     course = Course.query.filter(Course.id == course_id).first()
     placement = course.placements.filter(Placement.id == placement_id).first()
-    return placement.to_dict(), 200
+    return placement_schema.dump(placement), 200
   
   def delete(self, course_id, placement_id):
     course = Course.query.filter(Course.id == course_id).first()
@@ -284,17 +283,15 @@ class PlacementsByStudent(Resource):
 
   def get(self, student_id):
     student = Student.query.filter(Student.id == student_id).first()
-    return [placement.to_dict() for placement in student.placements], 200
+    return placements_schema.dump(student.placements), 200
   
 class Suggestions(Resource):
 
-  def get(self, course_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    return [suggestion.to_dict() for suggestion in course.suggestions], 200
+  def get(self):
+    return suggestions_schema.dump(Suggestion.query.all()), 200
   
-  def post(self, course_id):
+  def post(self):
     json = request.get_json()
-    course = Course.query.filter(Course.id == course_id).first()
     suggestion = Suggestion(
         course_id=json.get('course_id'),
         discipline_id=json.get('discipline_id'),
@@ -304,16 +301,16 @@ class Suggestions(Resource):
     try:
         db.session.add(suggestion)
         db.session.commit()
-        return suggestion.to_dict(), 201
+        return suggestion_schema.dump(suggestion), 201
     except IntegrityError:
         return {'message': 'Error creating suggestion'}, 422
     
-class SuggestionById(Resource):
+class SuggestionByCourseIdAndSuggestionId(Resource):
    
   def get(self, course_id, suggestion_id):
     course = Course.query.filter(Course.id == course_id).first()
     suggestion = course.suggestions.filter(Suggestion.id == suggestion_id).first()
-    return suggestion.to_dict(), 200
+    return suggestion_schema.dump(suggestion), 200
   
   def delete(self, course_id, suggestion_id):
     course = Course.query.filter(Course.id == course_id).first()
@@ -322,10 +319,22 @@ class SuggestionById(Resource):
     db.session.commit()
     return {'message': 'Suggestion deleted'}, 200
   
+class SuggestionById(Resource):
+   
+  def get(self, suggestion_id):
+    suggestion = Suggestion.query.filter(Suggestion.id == suggestion_id).first()
+    return suggestion_schema.dump(suggestion), 200
+  
+  def delete(self, suggestion_id):
+    suggestion = Suggestion.query.filter(Suggestion.id == suggestion_id).first()
+    db.session.delete(suggestion)
+    db.session.commit()
+    return {'message': 'Suggestion deleted'}, 200
+  
 class Courses(Resource):
 
   def get(self):
-    return [course.to_dict() for course in Course.query.all()], 200
+    return courses_schema.dump(Course.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -337,7 +346,7 @@ class Courses(Resource):
     try:
         db.session.add(course)
         db.session.commit()
-        return course.to_dict(), 201
+        return course_schema.dump(course), 201
     except IntegrityError:
         return {'message': 'Error creating course'}, 422
       
@@ -345,7 +354,7 @@ class CourseById(Resource):
    
   def get(self, course_id):
     course = Course.query.filter(Course.id == course_id).first()
-    return course.to_dict(), 200
+    return course_schema.dump(course), 200
   
   def patch(self, course_id):
     course = Course.query.filter(Course.id == course_id).first()
@@ -357,7 +366,7 @@ class CourseById(Resource):
     if json.get('level_id'):
       course.level_id = json.get('level_id')
     db.session.commit()
-    return course.to_dict(), 200
+    return course_schema.dump(course), 200
   
   def delete(self, course_id):
     course = Course.query.filter(Course.id == course_id).first()
@@ -368,7 +377,7 @@ class CourseById(Resource):
 class Students(Resource):
 
   def get(self):
-    return [student.to_dict() for student in Student.query.all()], 200
+    return students_schema.dump(Student.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -380,7 +389,7 @@ class Students(Resource):
     try:
         db.session.add(student)
         db.session.commit()
-        return student.to_dict(), 201
+        return student_schema.dump(student), 201
     except IntegrityError:
         return {'message': 'Error creating student'}, 422
       
@@ -388,7 +397,7 @@ class StudentById(Resource):
    
   def get(self, student_id):
     student = Student.query.filter(Student.id == student_id).first()
-    return student.to_dict(), 200
+    return student_schema.dump(student), 200
   
   def patch(self, student_id):
     student = Student.query.filter(Student.id == student_id).first()
@@ -400,7 +409,7 @@ class StudentById(Resource):
     if json.get('email_address'):
       student.email_address = json.get('email_address')
     db.session.commit()
-    return student.to_dict(), 200
+    return student_schema.dump(student), 200
   
   def delete(self, student_id):
     student = Student.query.filter(Student.id == student_id).first()
@@ -411,7 +420,7 @@ class StudentById(Resource):
 class Emails(Resource):
    
   def get(self):
-    return [email.to_dict() for email in Email.query.all()], 200
+    return emails_schema.dump(Email.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -421,7 +430,7 @@ class Emails(Resource):
     try:
         db.session.add(email)
         db.session.commit()
-        return email.to_dict(), 201
+        return email_schema.dump(email), 201
     except IntegrityError:
         return {'message': 'Error creating email'}, 422
       
@@ -429,7 +438,7 @@ class EmailById(Resource):
    
   def get(self, email_id):
     email = Email.query.filter(Email.id == email_id).first()
-    return email.to_dict(), 200
+    return email_schema.dump(email), 200
   
   def patch(self, email_id):
     email = Email.query.filter(Email.id == email_id).first()
@@ -437,7 +446,7 @@ class EmailById(Resource):
     if json.get('address'):
       email.address = json.get('address')
     db.session.commit()
-    return email.to_dict(), 200
+    return email_schema.dump(email), 200
   
   def delete(self, email_id):
     email = Email.query.filter(Email.id == email_id).first()
@@ -448,7 +457,7 @@ class EmailById(Resource):
 class Disciplines(Resource):
 
   def get(self):
-    return [discipline.to_dict() for discipline in Discipline.query.all()], 200
+    return disciplines_schema.dump(Discipline.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -458,7 +467,7 @@ class Disciplines(Resource):
     try:
         db.session.add(discipline)
         db.session.commit()
-        return discipline.to_dict(), 201
+        return discipline_schema.dump(discipline), 201
     except IntegrityError:
         return {'message': 'Error creating discipline'}, 422
       
@@ -466,7 +475,7 @@ class DisciplineById(Resource):
    
   def get(self, discipline_id):
     discipline = Discipline.query.filter(Discipline.id == discipline_id).first()
-    return discipline.to_dict(), 200
+    return discipline_schema.dump(discipline), 200
   
   def patch(self, discipline_id):
     discipline = Discipline.query.filter(Discipline.id == discipline_id).first()
@@ -474,7 +483,7 @@ class DisciplineById(Resource):
     if json.get('name'):
       discipline.name = json.get('name')
     db.session.commit()
-    return discipline.to_dict(), 200
+    return discipline_schema.dump(discipline), 200
   
   def delete(self, discipline_id):
     discipline = Discipline.query.filter(Discipline.id == discipline_id).first()
@@ -485,7 +494,7 @@ class DisciplineById(Resource):
 class Levels(Resource):
 
   def get(self):
-    return [level.to_dict() for level in Level.query.all()], 200
+    return levels_schema.dump(Level.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -495,7 +504,7 @@ class Levels(Resource):
     try:
         db.session.add(level)
         db.session.commit()
-        return level.to_dict(), 201
+        return level_schema.dump(level), 201
     except IntegrityError:
         return {'message': 'Error creating level'}, 422
       
@@ -503,7 +512,7 @@ class LevelById(Resource):
    
   def get(self, level_id):
     level = Level.query.filter(Level.id == level_id).first()
-    return level.to_dict(), 200
+    return level_schema.dump(level), 200
   
   def patch(self, level_id):
     level = Level.query.filter(Level.id == level_id).first()
@@ -511,7 +520,7 @@ class LevelById(Resource):
     if json.get('name'):
       level.name = json.get('name')
     db.session.commit()
-    return level.to_dict(), 200
+    return level_schema.dump(level), 200
   
   def delete(self, level_id):
     level = Level.query.filter(Level.id == level_id).first()
@@ -522,7 +531,7 @@ class LevelById(Resource):
 class Genders(Resource):
 
   def get(self):
-    return [gender.to_dict() for gender in Gender.query.all()], 200
+    return genders_schema.dump(Gender.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -532,7 +541,7 @@ class Genders(Resource):
     try:
         db.session.add(gender)
         db.session.commit()
-        return gender.to_dict(), 201
+        return gender_schema.dump(gender), 201
     except IntegrityError:
         return {'message': 'Error creating gender'}, 422
       
@@ -540,7 +549,7 @@ class GenderById(Resource):
    
   def get(self, gender_id):
     gender = Gender.query.filter(Gender.id == gender_id).first()
-    return gender.to_dict(), 200
+    return gender_schema.dump(gender), 200
   
   def patch(self, gender_id):
     gender = Gender.query.filter(Gender.id == gender_id).first()
@@ -548,7 +557,7 @@ class GenderById(Resource):
     if json.get('name'):
       gender.name = json.get('name')
     db.session.commit()
-    return gender.to_dict(), 200
+    return gender_schema.dump(gender), 200
   
   def delete(self, gender_id):
     gender = Gender.query.filter(Gender.id == gender_id).first()
@@ -559,7 +568,7 @@ class GenderById(Resource):
 class Templates(Resource):
 
   def get(self):
-    return [template.to_dict() for template in Template.query.all()], 200
+    return templates_schema.dump(Template.query.all()), 200
   
   def post(self):
     json = request.get_json()
@@ -570,7 +579,7 @@ class Templates(Resource):
     try:
         db.session.add(template)
         db.session.commit()
-        return template.to_dict(), 201
+        return template_schema.dump(template), 201
     except IntegrityError:
         return {'message': 'Error creating template'}, 422
       
@@ -578,7 +587,7 @@ class TemplateById(Resource):
    
   def get(self, template_id):
     template = Template.query.filter(Template.id == template_id).first()
-    return template.to_dict(), 200
+    return template_schema.dump(template), 200
   
   def patch(self, template_id):
     template = Template.query.filter(Template.id == template_id).first()
@@ -588,7 +597,7 @@ class TemplateById(Resource):
     if json.get('content'):
       template.content = json.get('content')
     db.session.commit()
-    return template.to_dict(), 200
+    return template_schema.dump(template), 200
   
   def delete(self, template_id):
     template = Template.query.filter(Template.id == template_id).first()
@@ -647,7 +656,7 @@ class RoleSchema(ma.SQLAlchemySchema):
   id = ma.auto_field()
   name = ma.auto_field()
   description = ma.auto_field()
-  users = fields.Nested('UserSchema', exclude=['roles'], many=True)
+  users = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=True)
 
 role_schema = RoleSchema()
 roles_schema = RoleSchema(many=True)
@@ -660,13 +669,13 @@ class CourseSchema(ma.SQLAlchemySchema):
 
   id = ma.auto_field()
   name = ma.auto_field()
-  discipline = fields.Nested('DisciplineSchema', exclude=['courses'], many=False)
-  level = fields.Nested('LevelSchema', exclude=['courses'], many=False)
-  users = fields.Nested('UserSchema', exclude=['courses'], many=True)
-  students = fields.Nested('StudentSchema', exclude=['courses'], many=True)
-  course_reports = fields.Nested('CourseReportSchema', exclude=['course'], many=True)
-  student_reports = fields.Nested('StudentReportSchema', exclude=['course'], many=True)
-  placements = fields.Nested('PlacementSchema', exclude=['course'], many=True)
+  discipline = fields.Nested('DisciplineSchema', only=['id', 'name'], many=False)
+  level = fields.Nested('LevelSchema', only=['id', 'name'], many=False)
+  users = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=True)
+  students = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=True)
+  course_reports = fields.Nested('CourseReportSchema', only=['id', 'user', 'content', 'date', 'approved'], many=True)
+  student_reports = fields.Nested('StudentReportSchema', only=['id', 'student', 'user', 'content', 'date', 'approved'], many=True)
+  placements = fields.Nested('PlacementSchema', only=['id', 'student', 'date'], many=True)
 
 course_schema = CourseSchema()
 courses_schema = CourseSchema(many=True)
@@ -771,7 +780,7 @@ class PlacementSchema(ma.SQLAlchemySchema):
     load_instance = True
 
   id = ma.auto_field()
-  student = fields.Nested('StudentSchema', exclude=['placements'], many=False)
+  student = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=False)
   course = fields.Nested('CourseSchema', exclude=['placements'], many=False)
   date = ma.auto_field()
 
