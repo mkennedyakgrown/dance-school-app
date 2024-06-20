@@ -2,7 +2,7 @@ from flask import request, session
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 
-from config import app, db, api
+from config import app, db, api, ma
 from models import User, Role, Course, Discipline, Level, Student, Gender, StudentReport, CourseReport, Placement, Suggestion, Template, Email
 
 class Login(Resource):
@@ -40,7 +40,7 @@ class Users(Resource):
    
   def get(self):
     users = User.query.all()
-    return [user.to_dict() for user in users], 200
+    return users_schema.dump(users), 200
   
   def post(self):
     json = request.get_json()
@@ -62,7 +62,7 @@ class UserById(Resource):
    
   def get(self, user_id):
     user = User.query.filter(User.id == user_id).first()
-    return user.to_dict(), 200
+    return user_schema.dump(user), 200
   
   def patch(self, user_id):
     user = User.query.filter(User.id == user_id).first()
@@ -617,6 +617,25 @@ api.add_resource(Genders, '/genders')
 api.add_resource(GenderById, '/genders/<int:gender_id>')
 api.add_resource(Templates, '/templates')
 api.add_resource(TemplateById, '/templates/<int:template_id>')
+
+
+class UserSchema(ma.SQLAlchemySchema):
+
+  class Meta:
+    model = User
+    load_instance = True
+
+  id = ma.auto_field()
+  first_name = ma.auto_field()
+  last_name = ma.auto_field()
+  email_address = ma.auto_field()
+  roles = ma.auto_field()
+  courses = ma.auto_field()
+  student_reports = ma.auto_field()
+  course_reports = ma.auto_field()
+
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
 
 if __name__ == "__main__":
   app.run(port=5555, debug=True)

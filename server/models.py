@@ -21,6 +21,8 @@ class User(db.Model, SerializerMixin):
     student_reports = db.relationship('StudentReport', back_populates='user')
     course_reports = db.relationship('CourseReport', back_populates='user')
 
+    # serialize_rules = ('-courses', '-student_reports', '-course_reports', '-password_hash')
+
     @validates('first_name')
     def validate_first_name(self, key, first_name):
         if not first_name:
@@ -91,6 +93,8 @@ class Role(db.Model, SerializerMixin):
 
     users = db.relationship('User', secondary='users_roles', back_populates='roles')
 
+    serialize_rules = ('-users',)
+
     @validates('name')
     def validate_name(self, key, name):
         if not name:
@@ -126,6 +130,8 @@ class Course(db.Model, SerializerMixin):
     course_reports = db.relationship('CourseReport', back_populates='course')
     student_reports = db.relationship('StudentReport', back_populates='course')
     placements = db.relationship('Placement', back_populates='course')
+
+    serialize_rules = ('-users', 'students', '-discipline', '-level', '-course_reports', '-student_reports', '-placements')
 
     @validates('name')
     def validate_name(self, key, name):
