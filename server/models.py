@@ -91,11 +91,31 @@ class Role(db.Model, SerializerMixin):
 
     users = db.relationship('User', secondary='users_roles', back_populates='roles')
 
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Role must have a name')
+        if len(name) > 20:
+            raise AssertionError('Role name must be less than 20 characters')
+        if len(name) < 2:
+            raise AssertionError('Role name must be at least 2 characters')
+        return name
+
+    @validates('description')
+    def validate_description(self, key, description):
+        if not description:
+            raise AssertionError('Role must have a description')
+        if len(description) > 200:
+            raise AssertionError('Role description must be less than 200 characters')
+        if len(description) < 2:
+            raise AssertionError('Role description must be at least 2 characters')
+        return description
+
 class Course(db.Model, SerializerMixin):
     __tablename__ = 'courses'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True, nullable=False)
+    name = db.Column(db.String(40), unique=True, nullable=False)
     discipline_id = db.Column(db.Integer, db.ForeignKey('disciplines.id'), nullable=False)
     level_id = db.Column(db.Integer, db.ForeignKey('levels.id'), nullable=False)
 
@@ -107,6 +127,32 @@ class Course(db.Model, SerializerMixin):
     student_reports = db.relationship('StudentReport', back_populates='course')
     placements = db.relationship('Placement', back_populates='course')
 
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Course must have a name')
+        if len(name) > 40:
+            raise AssertionError('Course name must be less than 40 characters')
+        if len(name) < 2:
+            raise AssertionError('Course name must be at least 2 characters')
+        return name
+    
+    @validates('discipline_id')
+    def validate_discipline_id(self, key, discipline_id):
+        if not discipline_id:
+            raise AssertionError('Course must have a discipline')
+        if discipline_id not in [discipline.id for discipline in Discipline.query.all()]:
+            raise AssertionError('Course must have a valid discipline')
+        return discipline_id
+    
+    @validates('level_id')
+    def validate_level_id(self, key, level_id):
+        if not level_id:
+            raise AssertionError('Course must have a level')
+        if level_id not in [level.id for level in Level.query.all()]:
+            raise AssertionError('Course must have a valid level')
+        return level_id
+
 class Discipline(db.Model, SerializerMixin):
     __tablename__ = 'disciplines'
 
@@ -115,6 +161,16 @@ class Discipline(db.Model, SerializerMixin):
 
     courses = db.relationship('Course', back_populates='discipline')
 
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Discipline must have a name')
+        if len(name) > 20:
+            raise AssertionError('Discipline name must be less than 20 characters')
+        if len(name) < 2:
+            raise AssertionError('Discipline name must be at least 2 characters')
+        return name
+
 class Level(db.Model, SerializerMixin):
     __tablename__ = 'levels'
 
@@ -122,6 +178,14 @@ class Level(db.Model, SerializerMixin):
     name = db.Column(db.String(20), unique=True, nullable=False)
 
     courses = db.relationship('Course', back_populates='level')
+
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Level must have a name')
+        if len(name) > 20:
+            raise AssertionError('Level name must be less than 20 characters')
+        return name
 
 class Student(db.Model, SerializerMixin):
     __tablename__ = 'students'
@@ -140,6 +204,46 @@ class Student(db.Model, SerializerMixin):
     email = db.relationship('Email', back_populates='student')
     placements = db.relationship('Placement', back_populates='student')
 
+    @validates('first_name')
+    def validate_first_name(self, key, first_name):
+        if not first_name:
+            raise AssertionError('User must have a first name')
+        if not search('[a-zA-Z]', first_name):
+            raise AssertionError('User first name must only contain letters')
+        if len(first_name) > 20:
+            raise AssertionError('User first name must be less than 20 characters')
+        if len(first_name) < 2:
+            raise AssertionError('User first name must be at least 2 characters')
+        if ' ' in first_name:
+            raise AssertionError('User first name must not contain spaces')
+        return first_name
+
+    @validates('last_name')
+    def validate_last_name(self, key, last_name):
+        if not last_name:
+            raise AssertionError('User must have a last name')
+        if not search('[a-zA-Z]', last_name):
+            raise AssertionError('User last name must only contain letters')
+        if len(last_name) > 20:
+            raise AssertionError('User last name must be less than 20 characters')
+        if len(last_name) < 2:
+            raise AssertionError('User last name must be at least 2 characters')
+        if ' ' in last_name:
+            raise AssertionError('User last name must not contain spaces')
+        return last_name
+
+    @validates('email_address')
+    def validate_email_address(self, key, email_address):
+        if not email_address:
+            raise AssertionError('User must have an email address')
+        if not search('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', email_address):
+            raise AssertionError('User email address must be valid')
+        if len(email_address) > 30:
+            raise AssertionError('User email address must be less than 30 characters')
+        if ' ' in email_address:
+            raise AssertionError('User email address must not contain spaces')
+        return email_address
+
 class Gender(db.Model, SerializerMixin):
     __tablename__ = 'genders'
 
@@ -147,6 +251,16 @@ class Gender(db.Model, SerializerMixin):
     name = db.Column(db.String(20), unique=True, nullable=False)
 
     students = db.relationship('Student', back_populates='gender')
+
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Gender must have a name')
+        if len(name) > 20:
+            raise AssertionError('Gender name must be less than 20 characters')
+        if len(name) < 2:
+            raise AssertionError('Gender name must be at least 2 characters')
+        return name
 
 class StudentReport(db.Model, SerializerMixin):
     __tablename__ = 'student_reports'
@@ -157,11 +271,33 @@ class StudentReport(db.Model, SerializerMixin):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
-    approved = db.Column(db.Boolean, nullable=False)
+    approved = db.Column(db.Boolean, nullable=False, default=False)
 
     student = db.relationship('Student', back_populates='student_reports')
     course = db.relationship('Course', back_populates='student_reports')
     user = db.relationship('User', back_populates='student_reports')
+
+    @validates('content')
+    def validate_content(self, key, content):
+        if not content:
+            raise AssertionError('Student report must have content')
+        if len(content) > 2000:
+            raise AssertionError('Student report content must be less than 500 characters')
+        return content
+    
+    @validates('date')
+    def validate_date(self, key, date):
+        if not date:
+            raise AssertionError('Student report must have a date')
+        return date
+    
+    @validates('approved')
+    def validate_approved(self, key, approved):
+        if approved is None:
+            raise AssertionError('Student report approval must have a value')
+        if not isinstance(approved, bool):
+            raise AssertionError('Student report approval must be a boolean')
+        return approved
 
 class CourseReport(db.Model, SerializerMixin):
     __tablename__ = 'course_reports'
@@ -176,6 +312,28 @@ class CourseReport(db.Model, SerializerMixin):
     course = db.relationship('Course', back_populates='course_reports')
     user = db.relationship('User', back_populates='course_reports')
 
+    @validates('content')
+    def validate_content(self, key, content):
+        if not content:
+            raise AssertionError('Course report must have content')
+        if len(content) > 2000:
+            raise AssertionError('Course report content must be less than 2000 characters')
+        return content
+    
+    @validates('date')
+    def validate_date(self, key, date):
+        if not date:
+            raise AssertionError('Course report must have a date')
+        return date
+    
+    @validates('approved')
+    def validate_approved(self, key, approved):
+        if approved is None:
+            raise AssertionError('Course report approval must have a value')
+        if not isinstance(approved, bool):
+            raise AssertionError('Course report approval must be a boolean')
+        return approved
+
 class Placement(db.Model, SerializerMixin):
     __tablename__ = 'placements'
 
@@ -187,6 +345,12 @@ class Placement(db.Model, SerializerMixin):
     course = db.relationship('Course', back_populates='placements')
     student = db.relationship('Student', back_populates='placements')
 
+    @validates('date')
+    def validate_date(self, key, date):
+        if not date:
+            raise AssertionError('Placement must have a date')
+        return date
+
 class Suggestion(db.Model, SerializerMixin):
     __tablename__ = 'suggestions'
 
@@ -196,12 +360,30 @@ class Suggestion(db.Model, SerializerMixin):
     level_id = db.Column(db.Integer, db.ForeignKey('levels.id'), nullable=True)
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True)
 
+    @validates('course_id')
+    def validate_course_id(self, key, course_id):
+        if not course_id:
+            raise AssertionError('Suggestion must have a course')
+        return course_id
+
 class Template(db.Model, SerializerMixin):
     __tablename__ = 'templates'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
     content = db.Column(db.Text, nullable=False)
+
+    @validates('name')
+    def validate_name(self, key, name):
+        if not name:
+            raise AssertionError('Template must have a name')
+        return name
+    
+    @validates('content')
+    def validate_content(self, key, content):
+        if not content:
+            raise AssertionError('Template must have content')
+        return content
 
 class Email(db.Model, SerializerMixin):
     __tablename__ = 'emails'
@@ -214,6 +396,49 @@ class Email(db.Model, SerializerMixin):
     date = db.Column(db.DateTime, nullable=False)
 
     student = db.relationship('Student', back_populates='email')
+
+    @validates('student_id')
+    def validate_student_id(self, key, student_id):
+        if not student_id:
+            raise AssertionError('Email must have a student')
+        if student_id not in [student.id for student in Student.query.all()]:
+            raise AssertionError('Email must have a valid student')
+        return student_id
+
+    @validates('email_address')
+    def validate_email_address(self, key, email_address):
+        if not email_address:
+            raise AssertionError('User must have an email address')
+        if not search('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', email_address):
+            raise AssertionError('User email address must be valid')
+        if len(email_address) > 30:
+            raise AssertionError('User email address must be less than 30 characters')
+        if ' ' in email_address:
+            raise AssertionError('User email address must not contain spaces')
+        return email_address
+    
+    @validates('secondary_email_address')
+    def validate_secondary_email_address(self, key, secondary_email_address):
+        if secondary_email_address:
+            if not search('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', secondary_email_address):
+                raise AssertionError('User email address must be valid')
+            if len(secondary_email_address) > 30:
+                raise AssertionError('User email address must be less than 30 characters')
+            if ' ' in secondary_email_address:
+                raise AssertionError('User email address must not contain spaces')
+        return secondary_email_address
+    
+    @validates('content')
+    def validate_content(self, key, content):
+        if not content:
+            raise AssertionError('Email must have content')
+        return content
+    
+    @validates('date')
+    def validate_date(self, key, date):
+        if not date:
+            raise AssertionError('Email must have a date')
+        return date
 
 
 
