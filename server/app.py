@@ -9,6 +9,8 @@ from models import User, Role, Course, Discipline, Level, Student, Gender, Stude
 class Login(Resource):
 
   def post(self):
+    if session['user_id']:
+        return {'message': 'You are already logged in'}, 401
     json = request.get_json()
     email_address = json.get('email_address')
     user = User.query.filter(User.email_address == email_address).first()
