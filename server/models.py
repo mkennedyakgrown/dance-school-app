@@ -123,9 +123,9 @@ class Course(db.Model, SerializerMixin):
     students = db.relationship('Student', secondary='students_courses', back_populates='courses')
     discipline = db.relationship('Discipline', back_populates='courses')
     level = db.relationship('Level', back_populates='courses')
-    course_reports = db.relationship('CourseReport', back_populates='course')
+    course_reports = db.relationship('CourseReport', back_populates='course', cascade="all, delete-orphan")
     student_reports = db.relationship('StudentReport', back_populates='course')
-    placements = db.relationship('Placement', back_populates='course')
+    placements = db.relationship('Placement', back_populates='course', cascade="all, delete-orphan")
 
     serialize_rules = ('-users', 'students', '-discipline', '-level', '-course_reports', '-student_reports', '-placements')
 
@@ -202,9 +202,9 @@ class Student(db.Model, SerializerMixin):
 
     gender = db.relationship('Gender', back_populates='students')
     courses = db.relationship('Course', secondary='students_courses', back_populates='students')
-    student_reports = db.relationship('StudentReport', back_populates='student')
-    email = db.relationship('Email', back_populates='student')
-    placements = db.relationship('Placement', back_populates='student')
+    student_reports = db.relationship('StudentReport', back_populates='student', cascade='all, delete')
+    email = db.relationship('Email', back_populates='student', cascade='all, delete')
+    placements = db.relationship('Placement', back_populates='student', cascade='all, delete')
 
     @validates('first_name')
     def validate_first_name(self, key, first_name):

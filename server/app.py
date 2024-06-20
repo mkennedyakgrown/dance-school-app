@@ -2,6 +2,7 @@ from flask import request, session
 from flask_restful import Resource
 from sqlalchemy.exc import IntegrityError
 from marshmallow import fields
+from datetime import datetime
 
 from config import app, db, api, ma
 from models import User, Role, Course, Discipline, Level, Student, Gender, StudentReport, CourseReport, Placement, Suggestion, Template, Email
@@ -372,6 +373,29 @@ class CourseById(Resource):
       course.discipline_id = json.get('discipline_id')
     if json.get('level_id'):
       course.level_id = json.get('level_id')
+    if json.get('student_ids'):
+      for student_id in json.get('student_ids'):
+        student = Student.query.filter(Student.id == student_id).first()
+        course.students.append(student)
+    if json.get('remove_student_ids'):
+      for student_id in json.get('remove_student_ids'):
+        student = Student.query.filter(Student.id == student_id).first()
+        course.students.remove(student)
+        student_reports = StudentReport.query.filter(StudentReport.student_id == student_id, StudentReport.course_id == course_id).all()
+        if student_reports:
+          for student_report in student_reports:
+            db.session.delete(student_report)
+    if json.get('user_ids'):
+      for user_id in json.get('user_ids'):
+        user = User.query.filter(User.id == user_id).first()
+        course.users.append(user)
+    if json.get('remove_user_ids'):
+      for user_id in json.get('remove_user_ids'):
+        user = User.query.filter(User.id == user_id).first()
+        course.users.remove(user)
+        course_report = CourseReport.query.filter(CourseReport.user_id == user_id, CourseReport.course_id == course_id).first()
+        if course_report:
+          db.session.delete(course_report)
     db.session.commit()
     return course_schema.dump(course), 200
   
