@@ -10,8 +10,6 @@ from models import User, Role, Course, Discipline, Level, Student, Gender, Stude
 class Login(Resource):
 
   def post(self):
-    if session['user_id']:
-        return {'message': 'You are already logged in'}, 401
     json = request.get_json()
     email_address = json.get('email_address')
     user = User.query.filter(User.email_address == email_address).first()
@@ -26,7 +24,7 @@ class Login(Resource):
 class Logout(Resource):
    
   def delete(self):
-    if session['user_id']:
+    if session.get('user_id'):
         session['user_id'] = None
         return {'message': 'Successfully Logged Out'}, 200
     else:
@@ -35,7 +33,7 @@ class Logout(Resource):
 class CheckSession(Resource):
    
   def get(self):
-    user_id = session['user_id']
+    user_id = session.get('user_id')
     if user_id:
         user = User.query.filter(User.id == user_id).first()
         return user_schema.dump(user), 200
