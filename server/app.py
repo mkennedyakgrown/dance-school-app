@@ -137,13 +137,13 @@ class RoleById(Resource):
   
 class CourseReports(Resource):
    
-  def get(self, course_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    return course_reports_schema.dump(course.reports), 200
+  def get(self):
+    offset = request.args.get('offset', 0, type=int)
+    limit = request.args.get('limit', 100, type=int)
+    return course_reports_schema.dump(CourseReport.query.order_by(CourseReport.date).offset(offset).limit(limit).all()), 200
   
-  def post(self, course_id):
+  def post(self):
     json = request.get_json()
-    course = Course.query.filter(Course.id == course_id).first()
     report = CourseReport(
         user_id=json.get('user_id'),
         course_id=json.get('course_id'),
@@ -160,9 +160,10 @@ class CourseReports(Resource):
       
 class StudentReports(Resource):
    
-  def get(self, student_id):
-    student = Student.query.filter(Student.id == student_id).first()
-    return student_reports_schema.dump(student.reports), 200
+  def get(self):
+    offset = request.args.get('offset', 0, type=int)
+    limit = request.args.get('limit', 100, type=int)
+    return student_reports_schema.dump(StudentReport.query.order_by(StudentReport.date).offset(offset).limit(limit).all()), 200
   
   def post(self, student_id):
     json = request.get_json()
@@ -662,6 +663,8 @@ api.add_resource(UserById, '/users/<int:user_id>')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
 api.add_resource(CheckSession, '/check-session')
+api.add_resource(StudentReports, '/student-reports')
+api.add_resource(CourseReports, '/course-reports')
 api.add_resource(Roles, '/roles')
 api.add_resource(RoleById, '/roles/<int:role_id>')
 api.add_resource(Courses, '/courses')
