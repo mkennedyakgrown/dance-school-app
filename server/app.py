@@ -415,10 +415,14 @@ class Students(Resource):
   
   def post(self):
     json = request.get_json()
+    gender = Gender.query.filter(Gender.id == json.get('gender_id')).first() if json.get('gender_id') else None
     student = Student(
         first_name=json.get('first_name'),
         last_name=json.get('last_name'),
-        email_address=json.get('email_address')
+        email_address=json.get('email_address'),
+        secondary_email_address=json.get('secondary_email_address', ''),
+        birth_date=convert_to_date(json.get('birth_date')),
+        gender=gender
     )
     try:
         db.session.add(student)
@@ -864,6 +868,13 @@ class EmailSchema(ma.SQLAlchemySchema):
 
 email_schema = EmailSchema()
 emails_schema = EmailSchema(many=True)
+
+def convert_to_date(date_str):
+  try:
+    year, month, day = map(int, date_str.split('-'))
+    return datetime(year, month, day)
+  except ValueError:
+    raise ValueError("Incorrect data format, should be YYYY-MM-DD")
 
 if __name__ == "__main__":
   app.run(port=5555, debug=True)

@@ -246,6 +246,23 @@ class Student(db.Model, SerializerMixin):
             raise AssertionError('User email address must not contain spaces')
         return email_address
     
+    @validates('secondary_email_address')
+    def validate_secondary_email_address(self, key, secondary_email_address):
+        if secondary_email_address:
+            if not search('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', secondary_email_address):
+                raise AssertionError('User email address must be valid')
+            if len(secondary_email_address) > 30:
+                raise AssertionError('User email address must be less than 30 characters')
+            if ' ' in secondary_email_address:
+                raise AssertionError('User email address must not contain spaces')
+        return secondary_email_address
+    
+    @validates('birth_date')
+    def validate_birth_date(self, key, birth_date):
+        if not birth_date:
+            raise AssertionError('User must have a birth date')
+        return birth_date
+    
     @hybrid_property
     def name(self):
         return f'{self.first_name} {self.last_name}'
