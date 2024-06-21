@@ -446,6 +446,12 @@ class StudentById(Resource):
       student.last_name = json.get('last_name')
     if json.get('email_address'):
       student.email_address = json.get('email_address')
+    if json.get('secondary_email_address'):
+      student.secondary_email_address = json.get('secondary_email_address')
+    if json.get('birth_date'):
+      student.birth_date = convert_to_date(json.get('birth_date'))
+    if json.get('gender_id'):
+      student.gender = Gender.query.filter(Gender.id == json.get('gender_id')).first()
     db.session.commit()
     return student_schema.dump(student), 200
   
