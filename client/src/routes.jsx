@@ -1,6 +1,7 @@
 import App from "./App.jsx";
 import Admin from "./pages/Admin.jsx";
 import Courses from "./pages/Courses.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 import Emails from "./pages/Emails.jsx";
 import Instructors from "./pages/Instructors.jsx";
 import Login from "./pages/Login.jsx";
@@ -17,6 +18,7 @@ const routes = [
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
+      { path: "/", element: <Dashboard /> },
       { path: "/login", element: <Login /> },
       { path: "/admin", element: <Admin /> },
       { path: "/courses", element: <Courses /> },
