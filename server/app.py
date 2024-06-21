@@ -469,7 +469,10 @@ class Emails(Resource):
   def post(self):
     json = request.get_json()
     email = Email(
-        address=json.get('address')
+        student_id=json.get('student_id'),
+        email_address=json.get('email_address'),
+        content=json.get('content'),
+        date=convert_to_date(json.get('date'))
     )
     try:
         db.session.add(email)
@@ -487,8 +490,14 @@ class EmailById(Resource):
   def patch(self, email_id):
     email = Email.query.filter(Email.id == email_id).first()
     json = request.get_json()
-    if json.get('address'):
-      email.address = json.get('address')
+    if json.get('email_address'):
+      email.email_address = json.get('email_address')
+    if json.get('secondary_email_address'):
+      email.secondary_email_address = json.get('secondary_email_address')
+    if json.get('content'):
+      email.content = json.get('content')
+    if json.get('date'):
+      email.date = convert_to_date(json.get('date'))
     db.session.commit()
     return email_schema.dump(email), 200
   
