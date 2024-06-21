@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { MenuItem, Menu, Button } from "semantic-ui-react";
+import "../App.css";
 
 function NavBar({ user, setUser }) {
   const [activeItem, setActiveItem] = useState("dashboard");

@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
-import { Grid, GridRow, GridColumn, Segment } from "semantic-ui-react";
+import {
+  TableRow,
+  TableHeaderCell,
+  TableHeader,
+  TableFooter,
+  TableCell,
+  TableBody,
+  Table,
+} from "semantic-ui-react";
 
 function LatestReports() {
   const [studentReports, setStudentReports] = useState([]);
 
   useEffect(() => {
-    fetch(`/api/student-reports?offset=0&limit=20`)
+    fetch(`/api/student-reports?offset=0&limit=10`)
       .then((r) => r.json())
       .then((data) => {
         setStudentReports(data);
@@ -18,57 +26,31 @@ function LatestReports() {
     studentReports.length > 0
       ? studentReports.map((report) => {
           return (
-            <GridRow key={report.id}>
-              <GridColumn>
-                <Segment>{`${report.user.first_name} ${report.user.last_name}`}</Segment>
-              </GridColumn>
-              <GridColumn>
-                <Segment>{report.course.name}</Segment>
-              </GridColumn>
-              <GridColumn>
-                <Segment>{`${report.student.first_name} ${report.student.last_name}`}</Segment>
-              </GridColumn>
-              <GridColumn>
-                <Segment>{report.content.slice(0, 50)}</Segment>
-              </GridColumn>
-            </GridRow>
+            <TableRow key={report.id}>
+              <TableCell>{`${report.user.first_name} ${report.user.last_name}`}</TableCell>
+              <TableCell>{report.course.name}</TableCell>
+              <TableCell>{`${report.student.first_name} ${report.student.last_name}`}</TableCell>
+              <TableCell>{report.content.slice(0, 50)}</TableCell>
+            </TableRow>
           );
         })
       : null;
 
   return (
-    <Grid columns={4} divided>
-      <GridRow>
-        <GridColumn>
-          <Segment>
-            <b>Latest Reports</b>
-          </Segment>
-        </GridColumn>
-      </GridRow>
-      <GridRow>
-        <GridColumn>
-          <Segment>
-            <b>Instructor</b>
-          </Segment>
-        </GridColumn>
-        <GridColumn>
-          <Segment>
-            <b>Course</b>
-          </Segment>
-        </GridColumn>
-        <GridColumn>
-          <Segment>
-            <b>Student</b>
-          </Segment>
-        </GridColumn>
-        <GridColumn>
-          <Segment>
-            <b>Text</b>
-          </Segment>
-        </GridColumn>
-      </GridRow>
-      {latestReports}
-    </Grid>
+    <Table celled>
+      <TableHeader>
+        <TableHeaderCell>Latest Reports</TableHeaderCell>
+      </TableHeader>
+      <TableHeader>
+        <TableRow>
+          <TableHeaderCell>Instructor</TableHeaderCell>
+          <TableHeaderCell>Course</TableHeaderCell>
+          <TableHeaderCell>Student</TableHeaderCell>
+          <TableHeaderCell>Report</TableHeaderCell>
+        </TableRow>
+      </TableHeader>
+      <TableBody>{latestReports}</TableBody>
+    </Table>
   );
 }
 
