@@ -23,9 +23,7 @@ function App() {
       <header className="App-header">
         <NavBar {...{ user, setUser }} />
       </header>
-      <body>
-        <Outlet context={{ user, setUser }} />
-      </body>
+      <Outlet context={{ user, setUser }} />
     </>
   );
 }

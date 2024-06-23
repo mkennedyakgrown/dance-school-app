@@ -127,8 +127,6 @@ class Course(db.Model, SerializerMixin):
     student_reports = db.relationship('StudentReport', back_populates='course')
     placements = db.relationship('Placement', back_populates='course', cascade="all, delete-orphan")
 
-    serialize_rules = ('-users', 'students', '-discipline', '-level', '-course_reports', '-student_reports', '-placements')
-
     @validates('name')
     def validate_name(self, key, name):
         if not name:

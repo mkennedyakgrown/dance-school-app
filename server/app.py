@@ -61,6 +61,23 @@ class Users(Resource):
         return user.to_dict(), 201
     except IntegrityError:
         return {'message': 'Error creating user'}, 422
+    
+class InstructorsStatuses(Resource):
+
+  def get(self):
+    instructors = [user for user in User.query.all() if Role.query.filter(Role.name == 'Instructor').first() in user.roles]
+    instructors_statuses = []
+    for instructor in instructors:
+      completed_reports = len([report for report in instructor.student_reports if report.approved == True]) + len([report for report in instructor.course_reports if report.approved == True])
+      pending_reports = sum(len(course.students) for course in instructor.courses) + len(instructor.courses) - completed_reports
+      instructors_statuses.append({
+        'id': instructor.id,
+        'name': f'{instructor.first_name} {instructor.last_name}',
+        'completed_reports': completed_reports,
+        'pending_reports': pending_reports,
+        'courses': len(instructor.courses)
+        })
+    return instructors_statuses, 200
       
 class UserById(Resource):
    
@@ -659,6 +676,7 @@ class TemplateById(Resource):
   
 
 api.add_resource(Users, '/users')
+api.add_resource(InstructorsStatuses, '/instructors-statuses')
 api.add_resource(UserById, '/users/<int:user_id>')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')

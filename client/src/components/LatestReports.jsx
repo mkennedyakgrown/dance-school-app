@@ -3,7 +3,6 @@ import {
   TableRow,
   TableHeaderCell,
   TableHeader,
-  TableFooter,
   TableCell,
   TableBody,
   Table,
@@ -19,8 +18,6 @@ function LatestReports() {
         setStudentReports(data);
       });
   }, []);
-
-  console.log(studentReports);
 
   const latestReports =
     studentReports.length > 0

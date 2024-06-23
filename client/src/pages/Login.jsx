@@ -62,7 +62,7 @@ function Login() {
   });
 
   return (
-    <body>
+    <>
       <Form onSubmit={formik.handleSubmit}>
         <FormGroup widths="equal">
           <FormField>
@@ -104,7 +104,7 @@ function Login() {
           )}
         </FormField>
       </Form>
-    </body>
+    </>
   );
 }
 
