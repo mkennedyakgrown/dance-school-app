@@ -372,8 +372,11 @@ class Courses(Resource):
 
   def get(self):
     offset = request.args.get('offset', 0, type=int)
-    limit = request.args.get('limit', 100, type=int)
-    courses = Course.query.offset(offset).limit(limit).all()
+    limit = request.args.get('limit', 0, type=int)
+    if limit == 0:
+      courses = Course.query.offset(offset).all()
+    else:
+      courses = Course.query.offset(offset).limit(limit).all()
     return courses_schema.dump(courses), 200
   
   def post(self):
@@ -441,8 +444,11 @@ class Students(Resource):
 
   def get(self):
     offset = request.args.get('offset', 0, type=int)
-    limit = request.args.get('limit', 100, type=int)
-    students = Student.query.offset(offset).limit(limit).all()
+    limit = request.args.get('limit', 0, type=int)
+    if limit == 0:
+      students = Student.query.offset(offset).all()
+    else:
+      students = Student.query.offset(offset).limit(limit).all()
     return students_schema.dump(students), 200
   
   def post(self):

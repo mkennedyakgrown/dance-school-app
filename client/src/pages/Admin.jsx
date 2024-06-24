@@ -1,8 +1,8 @@
 import { Grid, GridRow, GridColumn, Segment } from "semantic-ui-react";
 
-import LatestReports from "../components/LatestReports.jsx";
-import Statuses from "../components/Statuses.jsx";
-import InstructorReportStatuses from "../components/InstructorReportStatuses.jsx";
+import LatestReports from "../components/AdminLatestReports.jsx";
+import Statuses from "../components/AdminStatuses.jsx";
+import InstructorReportStatuses from "../components/AdminInstructorReportStatuses.jsx";
 
 function Admin() {
   return (
