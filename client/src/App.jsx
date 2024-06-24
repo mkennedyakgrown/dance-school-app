@@ -19,12 +19,12 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div className="appContainer">
       <header className="App-header">
         <NavBar {...{ user, setUser }} />
       </header>
       <Outlet context={{ user, setUser }} />
-    </>
+    </div>
   );
 }
 

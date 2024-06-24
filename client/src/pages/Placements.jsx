@@ -4,24 +4,25 @@ import * as yup from "yup";
 import {
   Header,
   Dropdown,
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableCell,
+  Grid,
+  GridColumn,
+  Segment,
   Button,
+  List,
 } from "semantic-ui-react";
 import { Form } from "react-router-dom";
+import "../App.css";
 
 function Placements() {
-  const [courses, setCourses] = useState([]);
+  const [disciplines, setDisciplines] = useState([]);
   const [students, setStudents] = useState([]);
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-    fetch("/api/courses")
+    fetch("/api/disciplines")
       .then((r) => r.json())
       .then((data) => {
-        setCourses(data);
+        setDisciplines(data);
       });
     fetch("/api/students")
       .then((r) => r.json())
@@ -31,13 +32,52 @@ function Placements() {
   }, []);
 
   const dropdownOptions =
+    disciplines.length > 0
+      ? disciplines.map((discipline) => {
+          return {
+            key: discipline.id,
+            text: discipline.name,
+            value: discipline.id,
+          };
+        })
+      : [];
+
+  const studentOptions =
+    students.length > 0
+      ? students.map((student) => {
+          return {
+            key: student.id,
+            text: `${student.first_name} ${student.last_name}`,
+            value: student.id,
+          };
+        })
+      : [];
+
+  const courseColumns =
     courses.length > 0
       ? courses.map((course) => {
-          return {
-            key: course.id,
-            text: course.name,
-            value: course.id,
-          };
+          return [
+            <GridColumn width="4" key={course.id}>
+              <Segment as="h3">{course.name}</Segment>
+              <List key={`students-${course.id}`}>
+                {course.students.map((student) => {
+                  return (
+                    <List.Item
+                      key={`course-${course.id}student-${student.id}`}
+                    >{`${student.first_name} ${student.last_name}`}</List.Item>
+                  );
+                })}
+              </List>
+              <Dropdown
+                lazyLoad
+                search
+                placeholder="Add a Student"
+                name="add-student"
+                options={studentOptions}
+              />
+              <Button color="green">Add Student</Button>
+            </GridColumn>,
+          ];
         })
       : [];
 
@@ -45,12 +85,18 @@ function Placements() {
     <>
       <Header as="h1">Placements</Header>
       <Dropdown
-        placeholder="Select a course"
+        placeholder="Select a Discipline"
+        name="discipline"
         floating
         search
         selection
         options={dropdownOptions}
+        onChange={(e, { value }) => {
+          setCourses(disciplines[value].courses);
+          console.log(disciplines[value]);
+        }}
       />
+      <Grid divided>{courseColumns}</Grid>
     </>
   );
 }
