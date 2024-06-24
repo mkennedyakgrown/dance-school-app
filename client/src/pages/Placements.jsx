@@ -12,6 +12,7 @@ import {
 } from "semantic-ui-react";
 import { Form } from "react-router-dom";
 import "../App.css";
+import CoursePlacement from "../components/CoursePlacement";
 
 function Placements() {
   const [disciplines, setDisciplines] = useState([]);
@@ -56,28 +57,29 @@ function Placements() {
   const courseColumns =
     courses.length > 0
       ? courses.map((course) => {
-          return [
-            <GridColumn width="4" key={course.id}>
-              <Segment as="h3">{course.name}</Segment>
-              <List key={`students-${course.id}`}>
-                {course.students.map((student) => {
-                  return (
-                    <List.Item
-                      key={`course-${course.id}student-${student.id}`}
-                    >{`${student.first_name} ${student.last_name}`}</List.Item>
-                  );
-                })}
-              </List>
-              <Dropdown
-                lazyLoad
-                search
-                placeholder="Add a Student"
-                name="add-student"
-                options={studentOptions}
-              />
-              <Button color="green">Add Student</Button>
-            </GridColumn>,
-          ];
+          return <CoursePlacement key={course.id} {...{ course, students }} />;
+          // return [
+          //   <GridColumn width="4" key={course.id}>
+          //     <Segment as="h3">{course.name}</Segment>
+          //     <List key={`students-${course.id}`}>
+          //       {course.students.map((student) => {
+          //         return (
+          //           <List.Item
+          //             key={`course-${course.id}student-${student.id}`}
+          //           >{`${student.first_name} ${student.last_name}`}</List.Item>
+          //         );
+          //       })}
+          //     </List>
+          //     <Dropdown
+          //       lazyLoad
+          //       search
+          //       placeholder="Add a Student"
+          //       name="add-student"
+          //       options={studentOptions}
+          //     />
+          //     <Button color="green">Add Student</Button>
+          //   </GridColumn>,
+          // ];
         })
       : [];
 

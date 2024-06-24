@@ -411,7 +411,8 @@ class CourseById(Resource):
     if json.get('student_ids'):
       for student_id in json.get('student_ids'):
         student = Student.query.filter(Student.id == student_id).first()
-        course.students.append(student)
+        if not student in course.students:
+          course.students.append(student)
     if json.get('remove_student_ids'):
       for student_id in json.get('remove_student_ids'):
         student = Student.query.filter(Student.id == student_id).first()
@@ -423,7 +424,8 @@ class CourseById(Resource):
     if json.get('user_ids'):
       for user_id in json.get('user_ids'):
         user = User.query.filter(User.id == user_id).first()
-        course.users.append(user)
+        if not user in course.users:
+          course.users.append(user)
     if json.get('remove_user_ids'):
       for user_id in json.get('remove_user_ids'):
         user = User.query.filter(User.id == user_id).first()
