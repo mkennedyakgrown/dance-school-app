@@ -78,6 +78,22 @@ class InstructorsStatuses(Resource):
         'courses': len(instructor.courses)
         })
     return instructors_statuses, 200
+  
+class Statuses(Resource):
+
+  def get(self):
+    placements = len(Placement.query.all())
+    placements_total = sum(len(course.students) for course in Course.query.all())
+    statuses = {
+      'reportsApproved': len(StudentReport.query.filter_by(approved=True).all()),
+      'reportsPending': len(StudentReport.query.filter_by(approved=False).all()),
+      'placementsApproved': placements,
+      'placementsPending': placements_total,
+      'emailsApproved': len(Email.query.filter_by(approved=True).all()),
+      'emailsPending': len(Student.query.all())
+    }
+    
+    return statuses, 200
       
 class UserById(Resource):
    
@@ -677,6 +693,7 @@ class TemplateById(Resource):
 
 api.add_resource(Users, '/users')
 api.add_resource(InstructorsStatuses, '/instructors-statuses')
+api.add_resource(Statuses, '/statuses')
 api.add_resource(UserById, '/users/<int:user_id>')
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')

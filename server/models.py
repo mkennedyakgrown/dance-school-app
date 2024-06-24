@@ -415,6 +415,7 @@ class Email(db.Model, SerializerMixin):
     secondary_email_address = db.Column(db.String(20), nullable=True)
     content = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
+    approved = db.Column(db.Boolean, nullable=False, default=False)
 
     student = db.relationship('Student', back_populates='email')
 
