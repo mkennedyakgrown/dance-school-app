@@ -11,6 +11,7 @@ import {
   TableCell,
   Button,
 } from "semantic-ui-react";
+import { Form } from "react-router-dom";
 
 function Placements() {
   const [courses, setCourses] = useState([]);
@@ -20,42 +21,36 @@ function Placements() {
     fetch("/api/courses")
       .then((r) => r.json())
       .then((data) => {
-        setCourses(data.courses);
+        setCourses(data);
       });
     fetch("/api/students")
       .then((r) => r.json())
       .then((data) => {
-        setStudents(data.students);
+        setStudents(data);
       });
   }, []);
 
-  console.log(courses);
-  console.log(students);
-
-  const dropdown =
+  const dropdownOptions =
     courses.length > 0
       ? courses.map((course) => {
-          return (
-            <Dropdown
-              key={course.id}
-              placeholder={course.name}
-              fluid
-              selection
-              options={students.map((student) => {
-                return {
-                  key: student.id,
-                  text: `${student.first_name} ${student.last_name}`,
-                  value: student.id,
-                };
-              })}
-            />
-          );
+          return {
+            key: course.id,
+            text: course.name,
+            value: course.id,
+          };
         })
       : [];
 
   return (
     <>
       <Header as="h1">Placements</Header>
+      <Dropdown
+        placeholder="Select a course"
+        floating
+        search
+        selection
+        options={dropdownOptions}
+      />
     </>
   );
 }
