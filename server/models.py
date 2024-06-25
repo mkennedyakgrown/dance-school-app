@@ -126,6 +126,7 @@ class Course(db.Model, SerializerMixin):
     course_reports = db.relationship('CourseReport', back_populates='course', cascade="all, delete-orphan")
     student_reports = db.relationship('StudentReport', back_populates='course')
     placements = db.relationship('Placement', back_populates='course', cascade="all, delete-orphan")
+    suggestions = db.relationship('Suggestion', back_populates='course', cascade="all, delete-orphan")
 
     @validates('name')
     def validate_name(self, key, name):
@@ -160,6 +161,7 @@ class Discipline(db.Model, SerializerMixin):
     name = db.Column(db.String(20), unique=True, nullable=False)
 
     courses = db.relationship('Course', back_populates='discipline')
+    suggestions = db.relationship('Suggestion', back_populates='discipline', cascade="all, delete-orphan")
 
     @validates('name')
     def validate_name(self, key, name):
@@ -178,6 +180,7 @@ class Level(db.Model, SerializerMixin):
     name = db.Column(db.String(20), unique=True, nullable=False)
 
     courses = db.relationship('Course', back_populates='level')
+    suggestions = db.relationship('Suggestion', back_populates='level', cascade="all, delete-orphan")
 
     @validates('name')
     def validate_name(self, key, name):
@@ -272,6 +275,7 @@ class Gender(db.Model, SerializerMixin):
     name = db.Column(db.String(20), unique=True, nullable=False)
 
     students = db.relationship('Student', back_populates='gender')
+    suggestions = db.relationship('Suggestion', back_populates='gender', cascade='all, delete')
 
     @validates('name')
     def validate_name(self, key, name):
@@ -380,6 +384,11 @@ class Suggestion(db.Model, SerializerMixin):
     discipline_id = db.Column(db.Integer, db.ForeignKey('disciplines.id'), nullable=True)
     level_id = db.Column(db.Integer, db.ForeignKey('levels.id'), nullable=True)
     gender_id = db.Column(db.Integer, db.ForeignKey('genders.id'), nullable=True)
+
+    course = db.relationship('Course', back_populates='suggestions')
+    discipline = db.relationship('Discipline', back_populates='suggestions')
+    level = db.relationship('Level', back_populates='suggestions')
+    gender = db.relationship('Gender', back_populates='suggestions')
 
     @validates('course_id')
     def validate_course_id(self, key, course_id):

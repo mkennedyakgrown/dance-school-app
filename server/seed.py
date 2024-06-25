@@ -143,7 +143,7 @@ if __name__ == "__main__":
     db.session.commit()
 
     print("Creating users...")
-    for i in range(10):
+    for i in range(20):
       email = fake.email()
       if len(email) > 30:
         email = email[(len(email)-30):]

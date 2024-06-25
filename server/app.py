@@ -698,6 +698,55 @@ class TemplateById(Resource):
     db.session.commit()
     return {'message': 'Template deleted'}, 200
   
+class Suggestions(Resource):
+
+  def get(self):
+    return suggestions_schema.dump(Suggestion.query.all()), 200
+  
+  def post(self):
+    json = request.get_json()
+    suggestion = Suggestion(
+        course_id=json.get('course_id')
+    )
+    if json.get('discipline_id'):
+      suggestion.discipline_id = json.get('discipline_id')
+    if json.get('level_id'):
+      suggestion.level_id = json.get('level_id')
+    if json.get('gender_id'):
+      suggestion.gender_id = json.get('gender_id')
+    try:
+        db.session.add(suggestion)
+        db.session.commit()
+        return suggestion_schema.dump(suggestion), 201
+    except IntegrityError:
+        return {'message': 'Error creating suggestion'}, 422
+    
+class SuggestionById(Resource):
+   
+  def get(self, suggestion_id):
+    suggestion = Suggestion.query.filter(Suggestion.id == suggestion_id).first()
+    return suggestion_schema.dump(suggestion), 200
+  
+  def patch(self, suggestion_id):
+    suggestion = Suggestion.query.filter(Suggestion.id == suggestion_id).first()
+    json = request.get_json()
+    if json.get('course_id'):
+      suggestion.course_id = json.get('course_id')
+    if json.get('discipline_id'):
+      suggestion.discipline_id = json.get('discipline_id')
+    if json.get('level_id'):
+      suggestion.level_id = json.get('level_id')
+    if json.get('gender_id'):
+      suggestion.gender_id = json.get('gender_id')
+    db.session.commit()
+    return suggestion_schema.dump(suggestion), 200
+
+  def delete(self, suggestion_id):
+    suggestion = Suggestion.query.filter(Suggestion.id == suggestion_id).first()
+    db.session.delete(suggestion)
+    db.session.commit()
+    return {'message': 'Suggestion deleted'}, 200
+  
 
 api.add_resource(Users, '/users')
 api.add_resource(InstructorsStatuses, '/instructors-statuses')
@@ -724,6 +773,8 @@ api.add_resource(Genders, '/genders')
 api.add_resource(GenderById, '/genders/<int:gender_id>')
 api.add_resource(Templates, '/templates')
 api.add_resource(TemplateById, '/templates/<int:template_id>')
+api.add_resource(Suggestions, '/suggestions')
+api.add_resource(SuggestionById, '/suggestions/<int:suggestion_id>')
 
 
 class UserSchema(ma.SQLAlchemySchema):
@@ -891,10 +942,10 @@ class SuggestionSchema(ma.SQLAlchemySchema):
     load_instance = True
 
   id = ma.auto_field()
-  course = fields.Nested('CourseSchema', exclude=['suggestions'], many=False)
-  discipline = fields.Nested('DisciplineSchema', exclude=['suggestions'], many=False)
-  level = fields.Nested('LevelSchema', exclude=['suggestions'], many=False)
-  gender = fields.Nested('GenderSchema', exclude=['suggestions'], many=False)
+  course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
+  discipline = fields.Nested('DisciplineSchema', only=['id', 'name'], many=False)
+  level = fields.Nested('LevelSchema', only=['id', 'name'], many=False)
+  gender = fields.Nested('GenderSchema', only=['id', 'name'], many=False)
 
 suggestion_schema = SuggestionSchema()
 suggestions_schema = SuggestionSchema(many=True)
