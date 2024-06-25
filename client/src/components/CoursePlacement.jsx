@@ -2,16 +2,13 @@ import { useState, useEffect } from "react";
 import { Dropdown, List, Segment, GridColumn, Button } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import PlacementStudentListItem from "./PlacementStudentListItem";
 
 function CoursePlacement({ course, students }) {
   const [currCourse, setCurrCourse] = useState({ ...course });
 
   const formSchema = yup.object().shape({
     add_student_id: yup.number().required(),
-  });
-
-  const formSchemaRemove = yup.object().shape({
-    remove_student_id: yup.number().required(),
   });
 
   const formik = useFormik({
@@ -28,27 +25,10 @@ function CoursePlacement({ course, students }) {
         body: JSON.stringify({ student_ids: [values.add_student_id] }),
       })
         .then((r) => r.json())
-        .then((data) => setCurrCourse(data));
-    },
-  });
-
-  const formikRemove = useFormik({
-    initialValues: {
-      remove_student_id: "",
-    },
-    validationSchema: formSchemaRemove,
-    onSubmit: (values) => {
-      fetch(`/api/courses/${currCourse.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          remove_student_ids: [values.remove_student_id],
-        }),
-      })
-        .then((r) => r.json())
-        .then((data) => setCurrCourse(data));
+        .then((data) => {
+          setCurrCourse(data);
+          formik.resetForm();
+        });
     },
   });
 
@@ -66,12 +46,13 @@ function CoursePlacement({ course, students }) {
   return (
     <GridColumn width="4" key={currCourse.id}>
       <Segment as="h3">{currCourse.name}</Segment>
-      <List key={`students-${currCourse.id}`}>
+      <List key={`students-${currCourse.id}`} selection>
         {currCourse.students.map((student) => {
           return (
-            <List.Item
-              key={`course-${currCourse.id}student-${student.id}`}
-            >{`${student.first_name} ${student.last_name}`}</List.Item>
+            <PlacementStudentListItem
+              key={`student-${student.id}`}
+              {...{ student, currCourse, setCurrCourse }}
+            />
           );
         })}
       </List>
@@ -81,9 +62,9 @@ function CoursePlacement({ course, students }) {
         placeholder="Add a Student"
         name="add-student"
         options={studentOptions}
+        value={formik.values.add_student_id}
         onChange={(e, { value }) => {
           formik.setFieldValue("add_student_id", value);
-          console.log(formik.values);
         }}
       />
       <Button color="green" type="submit" onClick={formik.handleSubmit}>
