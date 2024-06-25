@@ -1,5 +1,5 @@
 from config import app, db
-from models import User, Role, Course, Discipline, Level, Student, Gender, StudentReport, CourseReport, Placement, Suggestion, Template, Email, users_courses, users_roles, students_courses
+from models import User, Role, Course, Discipline, Level, Student, Gender, StudentReport, CourseReport, Placement, Suggestion, Template, Email, Users_Courses, Users_Roles, Students_Courses
 from random import choice
 from faker import Faker
 from datetime import datetime
@@ -45,14 +45,17 @@ if __name__ == "__main__":
       for course in courses:
         for i in range(choice([5,6,7,8,9,10])):
           student = choice(students)
-          course.students.append(student)
+          if student not in course.students:
+            course.students.append(student)
 
     def create_instructor_assignments():
       instructors = User.query.all()
       courses = Course.query.all()
       for course in courses:
         for i in range(choice([1,2])):
-          course.users.append(choice(instructors))
+          instructor = choice(instructors)
+          if instructor not in course.users:
+            course.users.append(instructor)
 
     def create_student_reports():
       students = Student.query.all()
@@ -134,9 +137,9 @@ if __name__ == "__main__":
     db.session.query(Suggestion).delete()
     db.session.query(Template).delete()
     db.session.query(Email).delete()
-    db.session.query(users_courses).delete()
-    db.session.query(users_roles).delete()
-    db.session.query(students_courses).delete()
+    db.session.query(Users_Courses).delete()
+    db.session.query(Users_Roles).delete()
+    db.session.query(Students_Courses).delete()
     db.session.commit()
 
     print("Creating users...")

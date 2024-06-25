@@ -462,19 +462,26 @@ class Email(db.Model, SerializerMixin):
             raise AssertionError('Email must have a date')
         return date
 
+class Users_Roles(db.Model, SerializerMixin):
+    __tablename__ = 'users_roles'
 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), primary_key=True, nullable=False)
 
-users_roles = db.Table('users_roles',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
-)
+    __table_args__ = (db.UniqueConstraint('user_id', 'role_id'),)
 
-users_courses = db.Table('users_courses',
-    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
-    db.Column('course_id', db.Integer, db.ForeignKey('courses.id'))
-)
+class Users_Courses(db.Model, SerializerMixin):
+    __tablename__ = 'users_courses'
 
-students_courses = db.Table('students_courses',
-    db.Column('student_id', db.Integer, db.ForeignKey('students.id')),
-    db.Column('course_id', db.Integer, db.ForeignKey('courses.id'))
-)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True, nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), primary_key=True, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'course_id'),)
+
+class Students_Courses(db.Model, SerializerMixin):
+    __tablename__ = 'students_courses'
+
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'), primary_key=True, nullable=False)
+    course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), primary_key=True, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('student_id', 'course_id'),)
