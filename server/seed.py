@@ -144,7 +144,11 @@ if __name__ == "__main__":
 
     print("Creating users...")
     for i in range(10):
-      create_user(fake.first_name(), fake.last_name(), fake.email(), "password")
+      email = fake.email()
+      if len(email) > 30:
+        email = email[(len(email)-30):]
+        print(f'Email shortened to {email}')
+      create_user(fake.first_name(), fake.last_name(), email, "password")
 
     print("Creating roles...")
     create_roles()
