@@ -17,6 +17,7 @@ function Suggestions() {
   const [disciplines, setDisciplines] = useState([]);
   const [levels, setLevels] = useState([]);
   const [genders, setGenders] = useState([]);
+  const [sortSelection, setSortSelection] = useState("");
 
   useEffect(() => {
     fetch("/api/suggestions")
@@ -123,6 +124,72 @@ function Suggestions() {
         })
       : null;
 
+  function sortSuggestionsByCourse() {
+    const sortedSuggestions = [...suggestions];
+    sortedSuggestions.sort((a, b) => {
+      if (a.course.name < b.course.name) {
+        return -1;
+      }
+      if (a.course.name > b.course.name) {
+        return 1;
+      }
+      return 0;
+    });
+    setSuggestions(sortedSuggestions);
+    setSortSelection("course");
+  }
+
+  function sortSuggestionsByDiscipline() {
+    const sortedSuggestions = [...suggestions];
+    sortedSuggestions.sort((a, b) => {
+      if (a.discipline) {
+        if (a.discipline.name < b.discipline.name) {
+          return -1;
+        }
+        if (a.discipline.name > b.discipline.name) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+    setSuggestions(sortedSuggestions);
+    setSortSelection("discipline");
+  }
+
+  function sortSuggestionsByLevel() {
+    const sortedSuggestions = [...suggestions];
+    sortedSuggestions.sort((a, b) => {
+      if (a.level) {
+        if (a.level.name < b.level.name) {
+          return -1;
+        }
+        if (a.level.name > b.level.name) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+    setSuggestions(sortedSuggestions);
+    setSortSelection("level");
+  }
+
+  function sortSuggestionsByGender() {
+    const sortedSuggestions = [...suggestions];
+    sortedSuggestions.sort((a, b) => {
+      if (a.gender) {
+        if (a.gender.name < b.gender.name) {
+          return -1;
+        }
+        if (a.gender.name > b.gender.name) {
+          return 1;
+        }
+      }
+      return 0;
+    });
+    setSuggestions(sortedSuggestions);
+    setSortSelection("gender");
+  }
+
   return (
     <>
       <Header as="h1">Suggestions</Header>
@@ -133,10 +200,30 @@ function Suggestions() {
             <TableHeaderCell>If</TableHeaderCell>
           </TableRow>
           <TableRow>
-            <TableHeaderCell>Course</TableHeaderCell>
-            <TableHeaderCell>Discipline</TableHeaderCell>
-            <TableHeaderCell>Level</TableHeaderCell>
-            <TableHeaderCell>Gender</TableHeaderCell>
+            <TableCell
+              onClick={() => sortSuggestionsByCourse()}
+              active={sortSelection === "course"}
+            >
+              Course
+            </TableCell>
+            <TableCell
+              onClick={() => sortSuggestionsByDiscipline()}
+              active={sortSelection === "discipline"}
+            >
+              Discipline
+            </TableCell>
+            <TableCell
+              onClick={() => sortSuggestionsByLevel()}
+              active={sortSelection === "level"}
+            >
+              Level
+            </TableCell>
+            <TableCell
+              onClick={() => sortSuggestionsByGender()}
+              active={sortSelection === "gender"}
+            >
+              Gender
+            </TableCell>
           </TableRow>
         </TableHeader>
         <TableBody>
