@@ -27,7 +27,7 @@ function InstructorReportStatuses() {
           const remainingReports = 0;
           return (
             <TableRow key={instructor.id}>
-              <TableCell>{`${instructor.first_name} ${instructor.last_name}`}</TableCell>
+              <TableCell>{instructor.name}</TableCell>
               <TableCell>{instructor.completed_reports}</TableCell>
               <TableCell>{instructor.pending_reports}</TableCell>
             </TableRow>

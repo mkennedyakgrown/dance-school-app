@@ -1,17 +1,5 @@
 import { useState, useEffect } from "react";
-import { useFormik } from "formik";
-import * as yup from "yup";
-import {
-  Header,
-  Dropdown,
-  Grid,
-  GridColumn,
-  Segment,
-  Button,
-  List,
-} from "semantic-ui-react";
-import { Form } from "react-router-dom";
-import "../App.css";
+import { Header, Dropdown, Grid } from "semantic-ui-react";
 import CoursePlacement from "../components/CoursePlacement";
 
 function Placements() {
@@ -56,31 +44,9 @@ function Placements() {
 
   const courseColumns =
     courses.length > 0
-      ? courses.map((course) => {
-          return <CoursePlacement key={course.id} {...{ course, students }} />;
-          // return [
-          //   <GridColumn width="4" key={course.id}>
-          //     <Segment as="h3">{course.name}</Segment>
-          //     <List key={`students-${course.id}`}>
-          //       {course.students.map((student) => {
-          //         return (
-          //           <List.Item
-          //             key={`course-${course.id}student-${student.id}`}
-          //           >{`${student.first_name} ${student.last_name}`}</List.Item>
-          //         );
-          //       })}
-          //     </List>
-          //     <Dropdown
-          //       lazyLoad
-          //       search
-          //       placeholder="Add a Student"
-          //       name="add-student"
-          //       options={studentOptions}
-          //     />
-          //     <Button color="green">Add Student</Button>
-          //   </GridColumn>,
-          // ];
-        })
+      ? courses.map((course) => (
+          <CoursePlacement key={course.id} {...{ course, students }} />
+        ))
       : [];
 
   return (
