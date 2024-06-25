@@ -32,15 +32,18 @@ function CoursePlacement({ course, students }) {
     },
   });
 
+  const courseStudentsIds = currCourse.students.map((student) => student.id);
   const studentOptions =
     students.length > 0
-      ? students.map((student) => {
-          return {
-            key: student.id,
-            text: `${student.first_name} ${student.last_name}`,
-            value: student.id,
-          };
-        })
+      ? students
+          .filter((student) => !courseStudentsIds.includes(student.id))
+          .map((student) => {
+            return {
+              key: student.id,
+              text: `${student.first_name} ${student.last_name}`,
+              value: student.id,
+            };
+          })
       : [];
 
   return (
