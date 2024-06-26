@@ -6,13 +6,12 @@ import {
   Input,
   Dropdown,
   List,
-  Table,
-  Radio,
   Checkbox,
 } from "semantic-ui-react";
 import { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import DeleteInstructorButton from "./DeleteInstructorButton";
 
 function InstructorRowEdit({
   instructor,
@@ -241,6 +240,9 @@ function InstructorRowEdit({
         <Button color="green" type="submit" onClick={formik.handleSubmit}>
           {instructor ? "Save" : "Create Instructor"}
         </Button>
+        <DeleteInstructorButton
+          {...{ instructor, instructors, setInstructors }}
+        />
       </TableCell>
     </TableRow>
   );

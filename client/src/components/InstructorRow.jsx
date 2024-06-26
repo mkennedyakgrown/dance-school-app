@@ -1,14 +1,7 @@
-import {
-  TableRow,
-  TableCell,
-  Button,
-  Icon,
-  Input,
-  Dropdown,
-  List,
-} from "semantic-ui-react";
+import { TableRow, TableCell, Button, Confirm } from "semantic-ui-react";
 import { useState } from "react";
 import InstructorRowEdit from "./InstructorRowEdit";
+import DeleteInstructorButton from "./DeleteInstructorButton";
 
 function InstructorRow({
   instructor,
@@ -52,6 +45,9 @@ function InstructorRow({
             >
               Edit
             </Button>
+            <DeleteInstructorButton
+              {...{ instructor, instructors, setInstructors }}
+            />
           </TableCell>
         </TableRow>
       ) : null}

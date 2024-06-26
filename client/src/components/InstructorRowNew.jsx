@@ -6,8 +6,6 @@ import {
   Input,
   Dropdown,
   List,
-  Table,
-  Radio,
   Checkbox,
 } from "semantic-ui-react";
 import { useState } from "react";
