@@ -19,7 +19,7 @@ function InstructorRowEdit({
   instructors,
   setInstructors,
   courseOptions,
-  rolesOptions,
+  roles,
   setEditActive,
   courses,
 }) {
@@ -32,7 +32,7 @@ function InstructorRowEdit({
     id: yup.number(),
     first_name: yup.string().required(),
     last_name: yup.string().required(),
-    roles: yup.array().of(yup.object()),
+    roles: yup.array().of(yup.number()),
     email_address: yup.string().email().required(),
     courses: yup.array().of(yup.object()),
   });
@@ -42,7 +42,7 @@ function InstructorRowEdit({
       id: instructor ? instructor.id : null,
       first_name: instructor ? instructor.first_name : "",
       last_name: instructor ? instructor.last_name : "",
-      roles: instructor ? instructor.roles : [],
+      roles: instructor ? instructor.roles.map((role) => role.id) : [],
       email_address: instructor ? instructor.email_address : "",
       courses: instructor ? instructor.courses : [],
     },
@@ -53,7 +53,7 @@ function InstructorRowEdit({
           id: instructor.id,
           first_name: values.first_name,
           last_name: values.last_name,
-          roles: values.roles.map((role) => role.id),
+          roles: values.roles,
           email_address: values.email_address,
           courses: values.courses.map((course) => course.id),
         };
@@ -73,6 +73,7 @@ function InstructorRowEdit({
             setAddCourse(null);
             setInstructorCourses([...instructor.courses]);
             setEditActive(false);
+            alert("Instructor updated successfully!");
           });
       } else {
         const body = {
@@ -84,7 +85,7 @@ function InstructorRowEdit({
           body.roles = values.roles;
         }
         if (values.courses.length > 0) {
-          body.courses = values.courses;
+          body.courses = values.courses.map((course) => course.id);
         }
         fetch("/api/users", {
           method: "POST",
@@ -100,6 +101,7 @@ function InstructorRowEdit({
             setAddCourse(null);
             setInstructorCourses([...instructor.courses]);
             setEditActive(false);
+            alert("Instructor created successfully!");
           });
       }
     },
@@ -136,6 +138,26 @@ function InstructorRowEdit({
         })
       : [];
 
+  const rolesCheckboxes = roles.map((role) => {
+    return (
+      <Checkbox
+        key={role.id}
+        label={role.name}
+        checked={formik.values.roles.includes(role.id)}
+        onChange={(e, { checked }) => {
+          if (checked) {
+            formik.setFieldValue("roles", formik.values.roles.concat(role.id));
+          } else {
+            formik.setFieldValue(
+              "roles",
+              formik.values.roles.filter((r) => r !== role.id)
+            );
+          }
+        }}
+      />
+    );
+  });
+
   return (
     <TableRow key={instructor.id}>
       <TableCell>
@@ -156,7 +178,7 @@ function InstructorRowEdit({
           value={formik.values.last_name}
         />
       </TableCell>
-      <TableCell></TableCell>
+      <TableCell>{rolesCheckboxes}</TableCell>
       <TableCell>
         <Input
           name="email_address"

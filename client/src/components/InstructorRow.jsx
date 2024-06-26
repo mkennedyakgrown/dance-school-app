@@ -15,7 +15,7 @@ function InstructorRow({
   instructors,
   setInstructors,
   courseOptions,
-  rolesOptions,
+  roles,
   courses,
 }) {
   const [editActive, setEditActive] = useState(false);
@@ -28,7 +28,7 @@ function InstructorRow({
           instructors={instructors}
           setInstructors={setInstructors}
           courseOptions={courseOptions}
-          rolesOptions={rolesOptions}
+          roles={roles}
           setEditActive={setEditActive}
           courses={courses}
         />

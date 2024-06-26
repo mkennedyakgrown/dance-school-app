@@ -66,7 +66,7 @@ function Instructors() {
                 instructors,
                 setInstructors,
                 courseOptions,
-                rolesOptions,
+                roles,
                 courses,
               }}
             />
