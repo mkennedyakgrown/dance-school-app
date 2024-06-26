@@ -18,7 +18,7 @@ function InstructorRow({
   roles,
   courses,
 }) {
-  const [editActive, setEditActive] = useState(false);
+  const [editActive, setEditActive] = useState(!instructor ? true : false);
 
   return (
     <>
@@ -32,7 +32,7 @@ function InstructorRow({
           setEditActive={setEditActive}
           courses={courses}
         />
-      ) : (
+      ) : instructor ? (
         <TableRow key={instructor.id}>
           <TableCell>{instructor.first_name}</TableCell>
           <TableCell>{instructor.last_name}</TableCell>
@@ -54,7 +54,7 @@ function InstructorRow({
             </Button>
           </TableCell>
         </TableRow>
-      )}
+      ) : null}
     </>
   );
 }

@@ -54,11 +54,17 @@ class Users(Resource):
         email_address=json.get('email_address')
     )
     user.password_hash = json.get('password', '')
+    if json.get('roles'):
+      user.roles = [Role.query.filter(Role.id == role_id).first() for role_id in json.get('roles')]
+      db.session.commit()
+    if json.get('courses'):
+      user.courses = [Course.query.filter(Course.id == course_id).first() for course_id in json.get('courses')]
+      db.session.commit()
     try:
         db.session.add(user)
         db.session.commit()
         user = User.query.filter(User.id == user.id).first()
-        return user.to_dict(), 201
+        return user_schema.dump(user), 201
     except IntegrityError:
         return {'message': 'Error creating user'}, 422
     

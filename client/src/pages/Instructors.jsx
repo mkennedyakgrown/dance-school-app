@@ -9,6 +9,7 @@ import {
   TableBody,
 } from "semantic-ui-react";
 import InstructorRow from "../components/InstructorRow";
+import InstructorRowEdit from "../components/InstructorRowEdit";
 
 function Instructors() {
   const [instructors, setInstructors] = useState([]);
@@ -87,7 +88,19 @@ function Instructors() {
             <TableHeaderCell>Courses</TableHeaderCell>
           </TableRow>
         </TableHeader>
-        <TableBody>{instructorRows}</TableBody>
+        <TableBody>
+          <InstructorRowEdit
+            key={"new-instructor-row"}
+            {...{
+              instructors,
+              setInstructors,
+              courseOptions,
+              roles,
+              courses,
+            }}
+          />
+          {instructorRows}
+        </TableBody>
       </Table>
     </>
   );

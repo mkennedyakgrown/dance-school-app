@@ -14,8 +14,7 @@ import { useState } from "react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
-function InstructorRowEdit({
-  instructor,
+function InstructorRowNew({
   instructors,
   setInstructors,
   courseOptions,
@@ -24,9 +23,7 @@ function InstructorRowEdit({
   courses,
 }) {
   const [addCourse, setAddCourse] = useState(null);
-  const [instructorCourses, setInstructorCourses] = useState(
-    instructor ? [...instructor.courses] : []
-  );
+  const [instructorCourses, setInstructorCourses] = useState([]);
 
   const formSchema = yup.object().shape({
     first_name: yup.string().required(),
@@ -38,88 +35,51 @@ function InstructorRowEdit({
 
   const formik = useFormik({
     initialValues: {
-      first_name: instructor ? instructor.first_name : "",
-      last_name: instructor ? instructor.last_name : "",
-      roles: instructor ? instructor.roles.map((role) => role.id) : [],
-      email_address: instructor ? instructor.email_address : "",
-      courses: instructor ? instructor.courses : [],
+      first_name: "",
+      last_name: "",
+      roles: [],
+      email_address: "",
+      courses: [],
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
-      if (instructor) {
-        const body = {
-          id: instructor.id,
-          first_name: values.first_name,
-          last_name: values.last_name,
-          roles: values.roles,
-          email_address: values.email_address,
-          courses: values.courses.map((course) => course.id),
-        };
-        fetch(`/api/users/${instructor.id}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        })
-          .then((r) => r.json())
-          .then((data) => {
-            setInstructors(
-              instructors.map((i) => (i.id === instructor.id ? data : i))
-            );
-            formik.resetForm();
-            setAddCourse(null);
-            setInstructorCourses([...instructor.courses]);
-            setEditActive(false);
-            alert("Instructor updated successfully!");
-          });
-      } else {
-        const body = {
-          first_name: values.first_name,
-          last_name: values.last_name,
-          email_address: values.email_address,
-          password: values.email_address,
-        };
-        if (values.roles.length > 0) {
-          body.roles = values.roles;
-        }
-        if (values.courses.length > 0) {
-          body.courses = values.courses.map((course) => course.id);
-        }
-        fetch("/api/users", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        })
-          .then((r) => r.json())
-          .then((data) => {
-            setInstructors([...instructors, data]);
-            formik.resetForm();
-            setAddCourse(null);
-            setInstructorCourses([]);
-            setEditActive(false);
-            alert("Instructor created successfully!");
-          });
+      const body = {
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email_address: values.email_address,
+        password: values.email_address,
+      };
+      if (values.roles.length > 0) {
+        body.roles = values.roles;
       }
+      if (values.courses.length > 0) {
+        body.courses = values.courses.map((course) => course.id);
+      }
+      fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      })
+        .then((r) => r.json())
+        .then((data) => {
+          setInstructors([...instructors, data]);
+          formik.resetForm();
+          setAddCourse(null);
+          setInstructorCourses([]);
+          setEditActive(false);
+          alert("Instructor created successfully!");
+        });
     },
   });
-
-  console.log(formik.errors);
 
   const currCourses =
     instructorCourses.length > 0
       ? instructorCourses.map((course) => {
           if (course !== null) {
             return (
-              <List.Item
-                key={
-                  instructor
-                    ? `${instructor.id}-${course.id}`
-                    : `new-instructor-${course.id}`
-                }
-              >
+              <List.Item key={`new-instructor-${course.id}`}>
                 <Button
                   type="button"
                   onClick={() => {
@@ -166,7 +126,7 @@ function InstructorRowEdit({
   });
 
   return (
-    <TableRow key={instructor ? instructor.id : "new-instructor"}>
+    <TableRow key={"new-instructor"}>
       <TableCell>
         <Input
           name="first_name"
@@ -232,18 +192,18 @@ function InstructorRowEdit({
           onClick={() => {
             formik.resetForm();
             setAddCourse(null);
-            setInstructorCourses([...instructor.courses]);
+            setInstructorCourses([]);
             setEditActive(false);
           }}
         >
           Cancel
         </Button>
         <Button color="green" type="submit" onClick={formik.handleSubmit}>
-          {instructor ? "Save" : "Create Instructor"}
+          "Create Instructor"
         </Button>
       </TableCell>
     </TableRow>
   );
 }
 
-export default InstructorRowEdit;
+export default InstructorRowNew;
