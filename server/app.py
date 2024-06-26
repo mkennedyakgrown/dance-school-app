@@ -115,6 +115,10 @@ class UserById(Resource):
         user.password_hash = json.get('new_password')
       else:
          return {'message': 'Invalid current password'}, 401
+    if json.get('roles'):
+      user.roles = [Role.query.filter(Role.id == role_id).first() for role_id in json.get('roles')]
+    if json.get('courses'):
+      user.courses = [Course.query.filter(Course.id == course_id).first() for course_id in json.get('courses')]
     db.session.commit()
 
     user = User.query.filter(User.id == user.id).first()
