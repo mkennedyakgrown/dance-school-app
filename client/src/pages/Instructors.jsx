@@ -7,6 +7,7 @@ import {
   TableHeaderCell,
   TableRow,
   TableBody,
+  Icon,
 } from "semantic-ui-react";
 import InstructorRow from "../components/InstructorRow";
 import InstructorRowEdit from "../components/InstructorRowEdit";
@@ -15,6 +16,7 @@ function Instructors() {
   const [instructors, setInstructors] = useState([]);
   const [courses, setCourses] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [sortSelection, setSortSelection] = useState("");
 
   useEffect(() => {
     fetch("/api/users")
@@ -75,14 +77,54 @@ function Instructors() {
         })
       : [];
 
+  function sortInstructorsByFirstName() {
+    const sortedInstructors = [...instructors];
+    sortedInstructors.sort((a, b) => {
+      if (a.first_name < b.first_name) {
+        return -1;
+      }
+      if (a.first_name > b.first_name) {
+        return 1;
+      }
+      return 0;
+    });
+    setInstructors(sortedInstructors);
+    setSortSelection("first_name");
+  }
+
+  function sortInstructorsByLastName() {
+    const sortedInstructors = [...instructors];
+    sortedInstructors.sort((a, b) => {
+      if (a.last_name < b.last_name) {
+        return -1;
+      }
+      if (a.last_name > b.last_name) {
+        return 1;
+      }
+      return 0;
+    });
+    setInstructors(sortedInstructors);
+    setSortSelection("last_name");
+  }
+
   return (
     <>
       <Header as="h1">Instructors</Header>
       <Table celled>
         <TableHeader>
           <TableRow>
-            <TableHeaderCell>First Name</TableHeaderCell>
-            <TableHeaderCell>Last Name</TableHeaderCell>
+            <TableHeaderCell onClick={() => sortInstructorsByFirstName()}>
+              First Name
+              {sortSelection === "first_name" ? (
+                <Icon name="carat arrow down" />
+              ) : null}
+            </TableHeaderCell>
+            <TableHeaderCell onClick={() => sortInstructorsByLastName()}>
+              Last Name
+              {sortSelection === "last_name" ? (
+                <Icon name="carat arrow down" />
+              ) : null}
+            </TableHeaderCell>
             <TableHeaderCell>Roles</TableHeaderCell>
             <TableHeaderCell>Email</TableHeaderCell>
             <TableHeaderCell>Courses</TableHeaderCell>
