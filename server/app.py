@@ -414,7 +414,7 @@ class CourseById(Resource):
     json = request.get_json()
     if json.get('name'):
       course.name = json.get('name')
-    if json.get('discipline_id'):
+    if json.get('discipline'):
       course.discipline_id = json.get('discipline_id')
     if json.get('level_id'):
       course.level_id = json.get('level_id')

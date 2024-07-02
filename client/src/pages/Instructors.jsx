@@ -10,7 +10,7 @@ import {
   Icon,
 } from "semantic-ui-react";
 import InstructorRow from "../components/InstructorRow";
-import InstructorRowEdit from "../components/InstructorRowEdit";
+import InstructorRowNew from "../components/InstructorRowNew";
 
 function Instructors() {
   const [instructors, setInstructors] = useState([]);
@@ -131,7 +131,7 @@ function Instructors() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <InstructorRowEdit
+          <InstructorRowNew
             key={"new-instructor-row"}
             {...{
               instructors,
