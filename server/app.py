@@ -396,6 +396,16 @@ class Courses(Resource):
         discipline_id=json.get('discipline_id'),
         level_id=json.get('level_id')
     )
+    if json.get('user_ids') != []:
+      for user_id in json.get('user_ids'):
+        user = User.query.filter(User.id == user_id).first()
+        if not user in course.users:
+          course.users.append(user)
+    if json.get('student_ids') != []:
+      for student_id in json.get('student_ids'):
+        student = Student.query.filter(Student.id == student_id).first()
+        if not student in course.students:
+          course.students.append(student)
     try:
         db.session.add(course)
         db.session.commit()

@@ -10,6 +10,7 @@ import {
   List,
   Icon,
   Form,
+  Confirm,
 } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -21,6 +22,7 @@ function Courses() {
   const [levels, setLevels] = useState([]);
   const [instructors, setInstructors] = useState([]);
   const [students, setStudents] = useState([]);
+  const [deleteActive, setDeleteActive] = useState(false);
 
   useEffect(() => {
     fetch("/api/courses")
@@ -62,6 +64,7 @@ function Courses() {
     level_id: yup.number().required(),
     user_ids: yup.array().of(yup.number()),
     student_ids: yup.array().of(yup.number()),
+    selectedCourse: yup.number(),
   });
 
   const formik = useFormik({
@@ -74,24 +77,69 @@ function Courses() {
       student_ids: currCourse
         ? currCourse.students.map((student) => student.id)
         : [],
+      selectedCourse: null,
     },
     validationSchema: schema,
     onSubmit: (values) => {
-      fetch(`/api/courses/${values.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          setCourses(
-            courses.map((course) => (course.id === data.id ? data : course))
-          );
-        });
+      if (values.id === 0) {
+        fetch("/api/courses", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            setCourses([...courses, data]);
+            setCurrCourse(data);
+            alert("Course created successfully!");
+            return data;
+          })
+          .then((data) => {
+            console.log(data);
+            formik.setValues({
+              id: data.id,
+              name: data.name,
+              discipline_id: data.discipline.id,
+              level_id: data.level.id,
+              user_ids: data.users.map((user) => user.id),
+              student_ids: data.students.map((student) => student.id),
+              selectedCourse: courseOptions.length,
+            });
+          });
+      } else {
+        fetch(`/api/courses/${values.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            setCourses(
+              courses.map((course) => (course.id === data.id ? data : course))
+            );
+          });
+      }
     },
   });
+
+  const courseOptions = [
+    {
+      key: 0,
+      text: "Create a new course",
+      value: 0,
+    },
+    ...courses.map((course) => {
+      return {
+        key: course.id,
+        text: course.name,
+        value: course.id,
+      };
+    }),
+  ];
 
   const instructorsList = instructors
     .filter((instructor) => formik.values.user_ids.includes(instructor.id))
@@ -140,6 +188,20 @@ function Courses() {
         </List.Item>
       );
     });
+
+  function handleDelete() {
+    fetch(`/api/courses/${formik.values.id}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setCourses(courses.filter((course) => course.id !== formik.values.id));
+        setDeleteActive(false);
+        formik.resetForm();
+        setCurrCourse(null);
+        alert("Course deleted successfully!");
+      });
+  }
 
   const editCourseForm = (
     <Form onSubmit={formik.handleSubmit}>
@@ -237,7 +299,7 @@ function Courses() {
               size="mini"
               color="blue"
               onClick={() => {
-                formik.setFieldValue("instructors", [
+                formik.setFieldValue("user_ids", [
                   ...formik.values.user_ids,
                   selectedInstructor,
                 ]);
@@ -293,8 +355,28 @@ function Courses() {
           </Form.Field>
         </GridRow>
         <Button type="submit" color="green">
-          Save Changes
+          {formik.values.id === 0 ? "Create Course" : "Save Changes"}
         </Button>
+        <GridRow>
+          <Button
+            type="button"
+            color="red"
+            onClick={() => {
+              setDeleteActive(true);
+            }}
+          >
+            Delete Course
+          </Button>
+          <Confirm
+            open={deleteActive}
+            onCancel={() => setDeleteActive(false)}
+            onConfirm={handleDelete}
+            header="Delete Course"
+            content="Are you sure you want to delete this course?"
+            confirmButton="Delete"
+            cancelButton="Cancel"
+          />
+        </GridRow>
       </Grid>
     </Form>
   );
@@ -308,26 +390,34 @@ function Courses() {
         search
         name="course-dropdown"
         placeholder="Select a Course"
-        options={courses.map((course) => {
-          return {
-            key: course.id,
-            text: course.name,
-            value: course.id,
-          };
-        })}
+        options={courseOptions}
+        value={formik.values.selectedCourse}
         onChange={(e, { value }) => {
           const newCourse = courses.find((c) => c.id === value);
           setCurrCourse(newCourse);
-          formik.setValues({
-            id: newCourse ? newCourse.id : "",
-            name: newCourse ? newCourse.name : "",
-            discipline_id: newCourse ? newCourse.discipline.id : "",
-            level_id: newCourse ? newCourse.level.id : "",
-            user_ids: newCourse ? newCourse.users.map((user) => user.id) : [],
-            student_ids: newCourse
-              ? newCourse.students.map((student) => student.id)
-              : [],
-          });
+          if (newCourse) {
+            formik.setValues({
+              id: newCourse ? newCourse.id : "",
+              name: newCourse ? newCourse.name : "",
+              discipline_id: newCourse ? newCourse.discipline.id : "",
+              level_id: newCourse ? newCourse.level.id : "",
+              user_ids: newCourse ? newCourse.users.map((user) => user.id) : [],
+              student_ids: newCourse
+                ? newCourse.students.map((student) => student.id)
+                : [],
+              selectedCourse: value,
+            });
+          } else {
+            formik.setValues({
+              id: 0,
+              name: "",
+              discipline_id: "",
+              level_id: "",
+              user_ids: [],
+              student_ids: [],
+              selectedCourse: value,
+            });
+          }
         }}
       />
       {editCourseForm}
