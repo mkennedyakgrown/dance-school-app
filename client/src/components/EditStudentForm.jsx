@@ -11,6 +11,7 @@ import {
   Grid,
   GridRow,
 } from "semantic-ui-react";
+import DeleteStudentButton from "./DeleteStudentButton";
 
 function EditStudentForm({
   formik = {
@@ -27,6 +28,8 @@ function EditStudentForm({
   },
   courses = [],
   genders = [],
+  students = [],
+  setStudents,
 }) {
   const [currCourse, setCurrCourse] = useState(null);
   const [currPlacementCourse, setCurrPlacementCourse] = useState(null);
@@ -233,6 +236,18 @@ function EditStudentForm({
                 Save Changes
               </Button>
             </FormField>
+          </GridRow>
+          <GridRow centered>
+            {formik.values.id > 0 && (
+              <DeleteStudentButton
+                {...{
+                  studentId: formik.values.id,
+                  students,
+                  setStudents,
+                  formik,
+                }}
+              />
+            )}
           </GridRow>
         </Grid>
       </Form>

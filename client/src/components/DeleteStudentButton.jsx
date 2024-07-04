@@ -1,14 +1,14 @@
 import { Button, Confirm } from "semantic-ui-react";
 import { useState } from "react";
 
-function DeleteInstructorButton({ instructor, instructors, setInstructors }) {
+function DeleteStudentButton({ studentId, students, setStudents, formik }) {
   const [deleteActive, setDeleteActive] = useState(false);
 
   function handleDelete() {
     const body = {
-      id: instructor.id,
+      id: studentId,
     };
-    fetch(`/api/users/${instructor.id}`, {
+    fetch(`/api/students/${studentId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -17,22 +17,23 @@ function DeleteInstructorButton({ instructor, instructors, setInstructors }) {
     })
       .then((r) => r.json())
       .then((data) => {
-        setInstructors(instructors.filter((i) => i.id !== instructor.id));
-        alert("Instructor deleted successfully!");
+        setStudents(students.filter((i) => i.id !== studentId));
+        alert("Student deleted successfully!");
         setDeleteActive(false);
+        formik.resetForm();
       });
   }
   return (
     <>
       <Button color="red" type="button" onClick={() => setDeleteActive(true)}>
-        Delete
+        Delete Student
       </Button>
       <Confirm
         open={deleteActive}
         onCancel={() => setDeleteActive(false)}
         onConfirm={handleDelete}
-        header="Delete Instructor"
-        content="Are you sure you want to delete this instructor?"
+        header="Delete Student"
+        content="Are you sure you want to delete this student?"
         confirmButton="Delete"
         cancelButton="Cancel"
       />
@@ -40,4 +41,4 @@ function DeleteInstructorButton({ instructor, instructors, setInstructors }) {
   );
 }
 
-export default DeleteInstructorButton;
+export default DeleteStudentButton;

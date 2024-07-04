@@ -526,8 +526,6 @@ class StudentById(Resource):
           student.placements.append(Placement(student_id=student.id, course_id=placement['course_id'], date=datetime.now()))
     if json.get('delete_placements'):
       for placement_id in json.get('delete_placements'):
-        print(f'Deleting placement {placement_id}')
-        print(Placement.query.filter(Placement.id == placement_id).first())
         Placement.query.filter(Placement.id == placement_id).delete()
     db.session.commit()
     return student_schema.dump(student), 200

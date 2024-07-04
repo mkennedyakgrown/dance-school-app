@@ -384,43 +384,50 @@ function Courses() {
   return (
     <>
       <Header as="h1">Courses</Header>
-      <Label>Select a Course</Label>
-      <Dropdown
-        fluid
-        search
-        name="course-dropdown"
-        placeholder="Select a Course"
-        options={courseOptions}
-        value={formik.values.selectedCourse}
-        onChange={(e, { value }) => {
-          const newCourse = courses.find((c) => c.id === value);
-          setCurrCourse(newCourse);
-          if (newCourse) {
-            formik.setValues({
-              id: newCourse ? newCourse.id : "",
-              name: newCourse ? newCourse.name : "",
-              discipline_id: newCourse ? newCourse.discipline.id : "",
-              level_id: newCourse ? newCourse.level.id : "",
-              user_ids: newCourse ? newCourse.users.map((user) => user.id) : [],
-              student_ids: newCourse
-                ? newCourse.students.map((student) => student.id)
-                : [],
-              selectedCourse: value,
-            });
-          } else {
-            formik.setValues({
-              id: 0,
-              name: "",
-              discipline_id: "",
-              level_id: "",
-              user_ids: [],
-              student_ids: [],
-              selectedCourse: value,
-            });
-          }
-        }}
-      />
-      {editCourseForm}
+      <Grid centered>
+        <GridRow>
+          <Dropdown
+            search
+            name="course-dropdown"
+            placeholder="Select a Course"
+            options={courseOptions}
+            value={formik.values.selectedCourse}
+            onChange={(e, { value }) => {
+              const newCourse = courses.find((c) => c.id === value);
+              setCurrCourse(newCourse);
+              if (newCourse) {
+                formik.setValues({
+                  id: newCourse ? newCourse.id : "",
+                  name: newCourse ? newCourse.name : "",
+                  discipline_id: newCourse ? newCourse.discipline.id : "",
+                  level_id: newCourse ? newCourse.level.id : "",
+                  user_ids: newCourse
+                    ? newCourse.users.map((user) => user.id)
+                    : [],
+                  student_ids: newCourse
+                    ? newCourse.students.map((student) => student.id)
+                    : [],
+                  selectedCourse: value,
+                });
+              } else {
+                formik.setValues({
+                  id: 0,
+                  name: "",
+                  discipline_id: "",
+                  level_id: "",
+                  user_ids: [],
+                  student_ids: [],
+                  selectedCourse: value,
+                });
+              }
+            }}
+          />
+          <Button color="grey" type="button" onClick={() => formik.resetForm()}>
+            Clear Form
+          </Button>
+        </GridRow>
+        {editCourseForm}
+      </Grid>
     </>
   );
 }

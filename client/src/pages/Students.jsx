@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Dropdown, Header, Icon } from "semantic-ui-react";
+import { Dropdown, Header, Button, Grid, GridRow } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 
@@ -131,16 +131,27 @@ function Students() {
   return (
     <>
       <Header as="h1">Students</Header>
-      <Dropdown
-        placeholder="Select Student"
-        search
-        selection
-        options={studentOptions}
-        onChange={(e, { value }) => {
-          formik.setValues(studentOptions.find((o) => o.value === value));
-        }}
-      />
-      <EditStudentForm {...{ formik, courses, genders }} />
+      <Grid>
+        <GridRow centered>
+          <Dropdown
+            placeholder="Select Student"
+            search
+            selection
+            options={studentOptions}
+            onChange={(e, { value }) => {
+              formik.setValues(studentOptions.find((o) => o.value === value));
+            }}
+          />
+          <Button color="grey" type="button" onClick={() => formik.resetForm()}>
+            Clear Form
+          </Button>
+        </GridRow>
+        <GridRow>
+          <EditStudentForm
+            {...{ formik, courses, genders, students, setStudents }}
+          />
+        </GridRow>
+      </Grid>
     </>
   );
 }
