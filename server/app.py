@@ -484,6 +484,11 @@ class Students(Resource):
         birth_date=convert_to_date(json.get('birth_date')),
         gender=gender
     )
+    if json.get('courses') != []:
+      for course_id in json.get('courses'):
+        course = Course.query.filter(Course.id == course_id).first()
+        if not course in student.courses:
+          student.courses.append(course)
     try:
         db.session.add(student)
         db.session.commit()
@@ -506,12 +511,24 @@ class StudentById(Resource):
       student.last_name = json.get('last_name')
     if json.get('email_address'):
       student.email_address = json.get('email_address')
-    if json.get('secondary_email_address'):
+    if json.get('secondary_email_address') != '':
       student.secondary_email_address = json.get('secondary_email_address')
     if json.get('birth_date'):
       student.birth_date = convert_to_date(json.get('birth_date'))
-    if json.get('gender_id'):
+    if json.get('gender_id') != 0:
       student.gender = Gender.query.filter(Gender.id == json.get('gender_id')).first()
+    if json.get('courses') != []:
+      student.courses = [Course.query.filter(Course.id == course_id).first() for course_id in json.get('courses')]
+    if json.get('placements'):
+      student_placements = json.get('placements')
+      for placement in student_placements:
+        if placement['id'] == 0:
+          student.placements.append(Placement(student_id=student.id, course_id=placement['course_id'], date=datetime.now()))
+    if json.get('delete_placements'):
+      for placement_id in json.get('delete_placements'):
+        print(f'Deleting placement {placement_id}')
+        print(Placement.query.filter(Placement.id == placement_id).first())
+        Placement.query.filter(Placement.id == placement_id).delete()
     db.session.commit()
     return student_schema.dump(student), 200
   
