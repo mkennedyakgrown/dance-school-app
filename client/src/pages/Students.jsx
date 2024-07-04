@@ -57,53 +57,103 @@ function Students() {
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
-      fetch(`/api/students/${values.id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      })
-        .then((r) => r.json())
-        .then((data) => {
-          setStudents(
-            students.map((student) => {
-              if (student.id === data.id) {
-                return data;
-              } else {
-                return student;
-              }
-            })
-          );
-          setCurrStudent(data);
-          formik.setValues({
-            key: data.id,
-            text: `${data.first_name} ${data.last_name}`,
-            value: data.id,
-            id: data.id,
-            first_name: data.first_name,
-            last_name: data.last_name,
-            email_address: data.email_address,
-            secondary_email_address: data.secondary_email_address,
-            birth_date: data.birth_date,
-            gender_id: data.gender_id,
-            courses: data.courses.map((c) => c.id),
-            placements: data.placements.map((p) => {
-              return {
-                id: p.id,
-                course_id: p.course.id,
-              };
-            }),
-            delete_placements: [],
+      if (values.id != 0) {
+        fetch(`/api/students/${values.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            setStudents(
+              students.map((student) => {
+                if (student.id === data.id) {
+                  return data;
+                } else {
+                  return student;
+                }
+              })
+            );
+            setCurrStudent(data);
+            formik.setValues({
+              key: data.id,
+              text: `${data.first_name} ${data.last_name}`,
+              value: data.id,
+              id: data.id,
+              first_name: data.first_name,
+              last_name: data.last_name,
+              email_address: data.email_address,
+              secondary_email_address: data.secondary_email_address,
+              birth_date: data.birth_date,
+              gender_id: data.gender_id,
+              courses: data.courses.map((c) => c.id),
+              placements: data.placements.map((p) => {
+                return {
+                  id: p.id,
+                  course_id: p.course.id,
+                };
+              }),
+              delete_placements: [],
+            });
           });
-        });
+      } else {
+        fetch("/api/students", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            setStudents([...students, data]);
+            setCurrStudent(data);
+            formik.setValues({
+              key: data.id,
+              text: `${data.first_name} ${data.last_name}`,
+              value: data.id,
+              id: data.id,
+              first_name: data.first_name,
+              last_name: data.last_name,
+              email_address: data.email_address,
+              secondary_email_address: data.secondary_email_address,
+              birth_date: data.birth_date,
+              gender_id: data.gender_id,
+              courses: data.courses.map((c) => c.id),
+              placements: data.placements.map((p) => {
+                return {
+                  id: p.id,
+                  course_id: p.course.id,
+                };
+              }),
+              delete_placements: [],
+            });
+          });
+      }
     },
   });
 
   console.log(formik.values);
 
-  const studentOptions =
-    students.length > 0
+  const studentOptions = [
+    {
+      key: 0,
+      text: "Create New Student",
+      value: 0,
+      id: 0,
+      first_name: "",
+      last_name: "",
+      email_address: "",
+      secondary_email_address: "",
+      birth_date: "",
+      gender_id: 0,
+      courses: [],
+      placements: [],
+      delete_placements: [],
+    },
+    ...(students.length > 0
       ? students.map((student) => {
           return {
             key: student.id,
@@ -126,7 +176,8 @@ function Students() {
             delete_placements: [],
           };
         })
-      : [];
+      : []),
+  ];
 
   return (
     <>

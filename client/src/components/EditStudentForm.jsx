@@ -140,96 +140,101 @@ function EditStudentForm({
               />
             </FormField>
           </GridRow>
-          <GridRow centered>
-            <FormField>
-              <Label>Courses</Label>
-              <Dropdown
-                placeholder="Select Course"
-                search
-                selection
-                clearable
-                options={courseOptions}
-                value={currCourse}
-                onChange={(e, { value }) => {
-                  setCurrCourse(value);
-                }}
-              />
-              <Button color="blue" type="button" onClick={handleAddCourse}>
-                Add Course
-              </Button>
-              <List>
-                {formik.values.courses.length > 0
-                  ? formik.values.courses.map((courseId) => (
-                      <List.Item key={`course-${courseId}`}>
-                        <Button
-                          circular
-                          size="mini"
-                          type="button"
-                          color="red"
-                          onClick={() => {
-                            formik.setFieldValue(
-                              "courses",
-                              formik.values.courses.filter(
-                                (cId) => cId !== courseId
-                              )
-                            );
-                          }}
-                        >
-                          <Icon name="remove" />
-                        </Button>
-                        {courses.find((c) => c.id === courseId).name}
-                      </List.Item>
-                    ))
-                  : null}
-              </List>
-            </FormField>
-            <FormField>
-              <Label>Placements</Label>
-              <Dropdown
-                placeholder="Select Course"
-                search
-                selection
-                clearable
-                options={courseOptions}
-                value={currPlacementCourse}
-                onChange={(e, { value }) => {
-                  setCurrPlacementCourse(value);
-                }}
-              />
-              <Button color="blue" type="button" onClick={handleAddPlacement}>
-                Add Placement
-              </Button>
-              <List>
-                {formik.values.placements.length > 0
-                  ? formik.values.placements.map((placement) => (
-                      <List.Item key={`placement-${placement.course_id}`}>
-                        <Button
-                          circular
-                          size="mini"
-                          type="button"
-                          color="red"
-                          onClick={() => {
-                            formik.setFieldValue(
-                              "placements",
-                              formik.values.placements.filter(
-                                (p) => p.id !== placement.id
-                              )
-                            );
-                            formik.setFieldValue("delete_placements", [
-                              ...formik.values.delete_placements,
-                              placement.id,
-                            ]);
-                          }}
-                        >
-                          <Icon name="remove" />
-                        </Button>
-                        {courses.find((c) => c.id === placement.course_id).name}
-                      </List.Item>
-                    ))
-                  : null}
-              </List>
-            </FormField>
-          </GridRow>
+          {formik.values.id != 0 ? (
+            <GridRow centered>
+              <FormField>
+                <Label>Courses</Label>
+                <Dropdown
+                  placeholder="Select Course"
+                  search
+                  selection
+                  clearable
+                  options={courseOptions}
+                  value={currCourse}
+                  onChange={(e, { value }) => {
+                    setCurrCourse(value);
+                  }}
+                />
+                <Button color="blue" type="button" onClick={handleAddCourse}>
+                  Add Course
+                </Button>
+                <List>
+                  {formik.values.courses.length > 0
+                    ? formik.values.courses.map((courseId) => (
+                        <List.Item key={`course-${courseId}`}>
+                          <Button
+                            circular
+                            size="mini"
+                            type="button"
+                            color="red"
+                            onClick={() => {
+                              formik.setFieldValue(
+                                "courses",
+                                formik.values.courses.filter(
+                                  (cId) => cId !== courseId
+                                )
+                              );
+                            }}
+                          >
+                            <Icon name="remove" />
+                          </Button>
+                          {courses.find((c) => c.id === courseId).name}
+                        </List.Item>
+                      ))
+                    : null}
+                </List>
+              </FormField>
+              <FormField>
+                <Label>Placements</Label>
+                <Dropdown
+                  placeholder="Select Course"
+                  search
+                  selection
+                  clearable
+                  options={courseOptions}
+                  value={currPlacementCourse}
+                  onChange={(e, { value }) => {
+                    setCurrPlacementCourse(value);
+                  }}
+                />
+                <Button color="blue" type="button" onClick={handleAddPlacement}>
+                  Add Placement
+                </Button>
+                <List>
+                  {formik.values.placements.length > 0
+                    ? formik.values.placements.map((placement) => (
+                        <List.Item key={`placement-${placement.course_id}`}>
+                          <Button
+                            circular
+                            size="mini"
+                            type="button"
+                            color="red"
+                            onClick={() => {
+                              formik.setFieldValue(
+                                "placements",
+                                formik.values.placements.filter(
+                                  (p) => p.id !== placement.id
+                                )
+                              );
+                              formik.setFieldValue("delete_placements", [
+                                ...formik.values.delete_placements,
+                                placement.id,
+                              ]);
+                            }}
+                          >
+                            <Icon name="remove" />
+                          </Button>
+                          {
+                            courses.find((c) => c.id === placement.course_id)
+                              .name
+                          }
+                        </List.Item>
+                      ))
+                    : null}
+                </List>
+              </FormField>
+            </GridRow>
+          ) : null}
           <GridRow centered>
             <FormField>
               <Button color="green" type="submit" onClick={formik.handleSubmit}>

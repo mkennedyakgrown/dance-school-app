@@ -475,14 +475,13 @@ class Students(Resource):
   
   def post(self):
     json = request.get_json()
-    gender = Gender.query.filter(Gender.id == json.get('gender_id')).first() if json.get('gender_id') else None
     student = Student(
         first_name=json.get('first_name'),
         last_name=json.get('last_name'),
         email_address=json.get('email_address'),
         secondary_email_address=json.get('secondary_email_address', ''),
         birth_date=convert_to_date(json.get('birth_date')),
-        gender=gender
+        gender_id=json.get('gender_id') if json.get('gender_id') > 0 else None
     )
     if json.get('courses') != []:
       for course_id in json.get('courses'):
