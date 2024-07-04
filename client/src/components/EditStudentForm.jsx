@@ -235,13 +235,19 @@ function EditStudentForm({
               </FormField>
             </GridRow>
           ) : null}
-          <GridRow centered>
-            <FormField>
-              <Button color="green" type="submit" onClick={formik.handleSubmit}>
-                Save Changes
-              </Button>
-            </FormField>
-          </GridRow>
+          {formik.values.id != null ? (
+            <GridRow centered>
+              <FormField>
+                <Button
+                  color="green"
+                  type="submit"
+                  onClick={formik.handleSubmit}
+                >
+                  {formik.values.id != 0 ? "Save Changes" : "Create Student"}
+                </Button>
+              </FormField>
+            </GridRow>
+          ) : null}
           <GridRow centered>
             {formik.values.id > 0 && (
               <DeleteStudentButton
