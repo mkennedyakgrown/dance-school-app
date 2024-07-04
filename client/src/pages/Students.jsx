@@ -9,7 +9,6 @@ function Students() {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
   const [genders, setGenders] = useState([]);
-  const [currStudent, setCurrStudent] = useState({});
 
   useEffect(() => {
     fetch("/api/students")
@@ -44,7 +43,7 @@ function Students() {
 
   const formik = useFormik({
     initialValues: {
-      id: 0,
+      id: null,
       first_name: "",
       last_name: "",
       email_address: "",
@@ -76,7 +75,6 @@ function Students() {
                 }
               })
             );
-            setCurrStudent(data);
             formik.setValues({
               key: data.id,
               text: `${data.first_name} ${data.last_name}`,
@@ -109,7 +107,6 @@ function Students() {
           .then((r) => r.json())
           .then((data) => {
             setStudents([...students, data]);
-            setCurrStudent(data);
             formik.setValues({
               key: data.id,
               text: `${data.first_name} ${data.last_name}`,
@@ -134,8 +131,6 @@ function Students() {
       }
     },
   });
-
-  console.log(formik.values);
 
   const studentOptions = [
     {
@@ -189,6 +184,7 @@ function Students() {
             search
             selection
             options={studentOptions}
+            value={formik.values.id}
             onChange={(e, { value }) => {
               formik.setValues(studentOptions.find((o) => o.value === value));
             }}
