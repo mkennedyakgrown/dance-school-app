@@ -109,18 +109,21 @@ class UserById(Resource):
   
   def patch(self, user_id):
     user = User.query.filter(User.id == user_id).first()
+
     json = request.get_json()
+    if json.get('new_password') and json.get('current_password'):
+      if user.authenticate(json.get('current_password')):
+        user.password_hash = json.get('new_password')
+        db.session.commit()
+        return {'message': 'Password changed'}, 200
+      else:
+         return {'message': 'Invalid current password'}, 401
     if json.get('first_name'):
       user.first_name = json.get('first_name')
     if json.get('last_name'):
       user.last_name = json.get('last_name')
     if json.get('email_address'):
       user.email_address = json.get('email_address')
-    if json.get('new_password') and json.get('current_password'):
-      if user.authenticate(json.get('current_password')):
-        user.password_hash = json.get('new_password')
-      else:
-         return {'message': 'Invalid current password'}, 401
     if json.get('roles'):
       user.roles = [Role.query.filter(Role.id == role_id).first() for role_id in json.get('roles')]
     if json.get('courses'):
