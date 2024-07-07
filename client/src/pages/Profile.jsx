@@ -32,7 +32,6 @@ function Profile() {
       })
         .then((r) => r.json())
         .then((data) => {
-          console.log(data);
           setUser(data);
         });
     },

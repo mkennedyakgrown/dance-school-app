@@ -4,35 +4,49 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import PlacementStudentListItem from "./PlacementStudentListItem";
 
-function CoursePlacement({ course, students }) {
+function CoursePlacement({ course, students, courses, setCourses }) {
   const [currCourse, setCurrCourse] = useState({ ...course });
 
   const formSchema = yup.object().shape({
+    course_id: yup.number().required(),
     add_student_id: yup.number().required(),
   });
 
   const formik = useFormik({
     initialValues: {
-      student_id: "",
+      course_id: course.id,
+      add_student_id: "",
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
-      fetch(`/api/courses/${currCourse.id}`, {
-        method: "PATCH",
+      fetch("/api/placements", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ student_ids: [values.add_student_id] }),
+        body: JSON.stringify({
+          course_id: course.id,
+          student_id: values.add_student_id,
+        }),
       })
         .then((r) => r.json())
         .then((data) => {
-          setCurrCourse(data);
+          console.log(data);
+          setCurrCourse({
+            ...currCourse,
+            placements: [...currCourse.placements, data],
+          });
           formik.resetForm();
         });
     },
   });
 
-  const courseStudentsIds = currCourse.students.map((student) => student.id);
+  console.log(currCourse);
+
+  const courseStudentsIds =
+    currCourse.placements.length > 0
+      ? currCourse.placements.map((placement) => placement.student.id)
+      : [];
   const studentOptions =
     students.length > 0
       ? students
@@ -50,11 +64,11 @@ function CoursePlacement({ course, students }) {
     <GridColumn width="4" key={currCourse.id}>
       <Segment as="h3">{currCourse.name}</Segment>
       <List key={`students-${currCourse.id}`} selection>
-        {currCourse.students.map((student) => {
+        {currCourse.placements.map((placement) => {
           return (
             <PlacementStudentListItem
-              key={`student-${student.id}`}
-              {...{ student, currCourse, setCurrCourse }}
+              key={`student-${placement.student.id}`}
+              {...{ student: placement.student, currCourse, setCurrCourse }}
             />
           );
         })}

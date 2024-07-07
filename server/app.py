@@ -298,22 +298,25 @@ class StudentReportById(Resource):
 class Placements(Resource):
 
   def get(self):
-    return placements_schema.dump(), 200
+    return placements_schema.dump(Placement.query.all()), 200
 
-  def post(self, course_id):
+  def post(self):
     json = request.get_json()
-    course = Course.query.filter(Course.id == course_id).first()
-    placement = Placement(
-        course_id=json.get('course_id'),
-        student_id=json.get('student_id'),
-        date=json.get('date')
-    )
-    try:
-        db.session.add(placement)
-        db.session.commit()
-        return placement_schema.dump(placement), 201
-    except IntegrityError:
-        return {'message': 'Error creating placement'}, 422
+    if Course.query.filter_by(id=json.get('course_id')).first() and Student.query.filter_by(id=json.get('student_id')).first():
+      placement = Placement(
+          course_id=json.get('course_id'),
+          student_id=json.get('student_id'),
+          date=datetime.now()
+      )
+      print(placement)
+      try:
+          db.session.add(placement)
+          db.session.commit()
+          return placement_schema.dump(placement), 201
+      except IntegrityError:
+          return {'message': 'Error creating placement'}, 422
+    else:
+      return {'message': 'Course or student does not exist'}, 404
     
 class PlacementById(Resource):
    
@@ -800,6 +803,8 @@ api.add_resource(Courses, '/courses')
 api.add_resource(CourseById, '/courses/<int:course_id>')
 api.add_resource(Students, '/students')
 api.add_resource(StudentById, '/students/<int:student_id>')
+api.add_resource(Placements, '/placements')
+api.add_resource(PlacementById, '/placements/<int:placement_id>')
 api.add_resource(Emails, '/emails')
 api.add_resource(EmailById, '/emails/<int:email_id>')
 api.add_resource(Disciplines, '/disciplines')

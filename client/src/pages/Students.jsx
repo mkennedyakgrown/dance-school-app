@@ -187,6 +187,7 @@ function Students() {
             value={formik.values.id}
             onChange={(e, { value }) => {
               formik.setValues(studentOptions.find((o) => o.value === value));
+              console.log(studentOptions.find((o) => o.value === value));
             }}
           />
           <Button color="grey" type="button" onClick={() => formik.resetForm()}>

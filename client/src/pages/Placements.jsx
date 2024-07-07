@@ -31,21 +31,13 @@ function Placements() {
         })
       : [];
 
-  const studentOptions =
-    students.length > 0
-      ? students.map((student) => {
-          return {
-            key: student.id,
-            text: `${student.first_name} ${student.last_name}`,
-            value: student.id,
-          };
-        })
-      : [];
-
   const courseColumns =
     courses.length > 0
       ? courses.map((course) => (
-          <CoursePlacement key={course.id} {...{ course, students }} />
+          <CoursePlacement
+            key={course.id}
+            {...{ course, students, courses, setCourses }}
+          />
         ))
       : [];
 
@@ -60,7 +52,7 @@ function Placements() {
         selection
         options={dropdownOptions}
         onChange={(e, { value }) => {
-          setCourses(disciplines[value].courses);
+          setCourses(disciplines.find((d) => d.id === value).courses);
           console.log(disciplines[value]);
         }}
       />
