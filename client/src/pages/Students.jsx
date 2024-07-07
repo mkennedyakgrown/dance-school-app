@@ -95,6 +95,7 @@ function Students() {
               }),
               delete_placements: [],
             });
+            alert("Student changes saved successfully!");
           });
       } else {
         fetch("/api/students", {
@@ -127,6 +128,9 @@ function Students() {
               }),
               delete_placements: [],
             });
+            alert(
+              `Student ${data.first_name} ${data.last_name} created successfully!`
+            );
           });
       }
     },

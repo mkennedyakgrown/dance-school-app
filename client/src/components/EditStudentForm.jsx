@@ -81,6 +81,7 @@ function EditStudentForm({
               <Label>First Name</Label>
               <Input
                 type="text"
+                autoComplete="first-name"
                 name="first_name"
                 value={formik.values.first_name}
                 onChange={formik.handleChange}
@@ -90,6 +91,7 @@ function EditStudentForm({
               <Label>Last Name</Label>
               <Input
                 type="text"
+                autoComplete="last-name"
                 name="last_name"
                 value={formik.values.last_name}
                 onChange={formik.handleChange}
@@ -101,6 +103,7 @@ function EditStudentForm({
               <Label>Email Address</Label>
               <Input
                 type="text"
+                autoComplete="email"
                 name="email_address"
                 value={formik.values.email_address}
                 onChange={formik.handleChange}
@@ -110,6 +113,7 @@ function EditStudentForm({
               <Label>Secondary Email Address</Label>
               <Input
                 type="text"
+                autoComplete="email"
                 name="secondary_email_address"
                 value={formik.values.secondary_email_address}
                 onChange={formik.handleChange}
@@ -121,6 +125,7 @@ function EditStudentForm({
               <Label>Birth Date</Label>
               <Input
                 type="date"
+                autoComplete="off"
                 name="birth_date"
                 value={formik.values.birth_date}
                 onChange={formik.handleChange}
@@ -130,6 +135,7 @@ function EditStudentForm({
               <Label>Gender</Label>
               <Dropdown
                 placeholder="Select Gender"
+                autoComplete="off"
                 search
                 selection
                 clearable
