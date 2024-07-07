@@ -68,7 +68,7 @@ function CoursePlacement({ course, students, courses, setCourses }) {
           return (
             <PlacementStudentListItem
               key={`student-${placement.student.id}`}
-              {...{ student: placement.student, currCourse, setCurrCourse }}
+              {...{ placement, currCourse, setCurrCourse }}
             />
           );
         })}

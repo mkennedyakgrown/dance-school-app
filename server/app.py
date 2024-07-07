@@ -320,14 +320,12 @@ class Placements(Resource):
     
 class PlacementById(Resource):
    
-  def get(self, course_id, placement_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    placement = course.placements.filter(Placement.id == placement_id).first()
+  def get(self, placement_id):
+    placement = Placement.query.filter(Placement.id == placement_id).first()
     return placement_schema.dump(placement), 200
   
-  def delete(self, course_id, placement_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    placement = course.placements.filter(Placement.id == placement_id).first()
+  def delete(self, placement_id):
+    placement = Placement.query.filter(Placement.id == placement_id).first()
     db.session.delete(placement)
     db.session.commit()
     return {'message': 'Placement deleted'}, 200
