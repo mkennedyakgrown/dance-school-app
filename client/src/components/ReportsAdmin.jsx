@@ -60,9 +60,8 @@ function ReportsAdmin() {
             .includes(studentsFilter.toLowerCase())
         )
         .map((student) => {
-          console.log(student);
           const studentReport = selectedCourse.student_reports.find(
-            (report) => report.student_id === student.id
+            (report) => report.student.id === student.id
           );
           if (studentReport) {
             return (

@@ -256,10 +256,9 @@ class CourseReportById(Resource):
       report.content = json.get('content')
     if json.get('content_json'):
       report.content_json = json.get('content_json')
-    if json.get('date'):
-      report.date = datetime.now()
     if json.get('approved'):
-      report.approved = json.get('approved')
+      report.approved = json.get('approved') if json.get('approved') is type(bool) else None
+    report.date = datetime.now()
     db.session.commit()
     return course_report_schema.dump(report), 200
   
@@ -271,21 +270,20 @@ class CourseReportById(Resource):
   
 class StudentReportById(Resource):
    
-  def get(self, student_id, report_id):
-    student = Student.query.filter(Student.id == student_id).first()
-    report = student.reports.filter(StudentReport.id == report_id).first()
+  def get(self, report_id):
+    report = StudentReport.query.filter(StudentReport.id == report_id).first()
     return student_report_schema.dump(report), 200
   
-  def patch(self, student_id, report_id):
-    student = Student.query.filter(Student.id == student_id).first()
-    report = student.reports.filter(StudentReport.id == report_id).first()
+  def patch(self, report_id):
+    report = StudentReport.query.filter(StudentReport.id == report_id).first()
     json = request.get_json()
     if json.get('content'):
       report.content = json.get('content')
-    if json.get('date'):
-      report.date = json.get('date')
+    if json.get('content_json'):
+      report.content_json = json.get('content_json')
     if json.get('approved'):
-      report.approved = json.get('approved')
+      report.approved = json.get('approved') if json.get('approved') is type(bool) else None
+    report.date = datetime.now()
     db.session.commit()
     return student_report_schema.dump(report), 200
   
@@ -797,6 +795,7 @@ api.add_resource(CheckSession, '/check-session')
 api.add_resource(StudentReports, '/student-reports')
 api.add_resource(CourseReports, '/course-reports')
 api.add_resource(CourseReportById, '/course-reports/<int:report_id>')
+api.add_resource(StudentReportById, '/student-reports/<int:report_id>')
 api.add_resource(Roles, '/roles')
 api.add_resource(RoleById, '/roles/<int:role_id>')
 api.add_resource(Courses, '/courses')

@@ -20,6 +20,7 @@ function ReportRow({
     student_id: yup.number().nullable(),
     content: yup.string(),
     content_json: yup.string(),
+    approved: yup.boolean().nullable(),
   });
 
   useEffect(() => {
@@ -33,6 +34,7 @@ function ReportRow({
       student_id: student_id || null,
       content: report ? report.content : "",
       content_json: report ? report.content_json : "",
+      approved: report ? report.approved : null,
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
@@ -89,12 +91,26 @@ function ReportRow({
           .then((data) => {
             setReport(data);
           });
+      } else if (reportType === "student" && report) {
+        console.log("PATCHING student report");
+        fetch(`api/student-reports/${report.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: values.content,
+            content_json: values.content_json,
+            approved: values.approved,
+          }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setReport(data);
+          });
       }
     },
   });
-
-  console.log(label, formik.errors);
-  console.log(formik.values);
 
   return (
     <TableRow>
