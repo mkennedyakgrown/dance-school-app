@@ -13,22 +13,8 @@ import ExampleTheme from "./ExampleTheme";
 import "../styles.css";
 import TextEditorSaveButton from "./TextEditorSaveButton";
 
-function ReportTextEditor() {
+function ReportTextEditor({ formik }) {
   const [editorState, setEditorState] = useState(null);
-
-  const formSchema = yup.object().shape({
-    content: yup.string().required("Body is required"),
-  });
-
-  const formik = useFormik({
-    initialValues: {
-      content: "",
-    },
-    validationSchema: formSchema,
-    onSubmit: (values) => {
-      console.log(values);
-    },
-  });
 
   function onChange(editorState) {
     const editorStateJSON = editorState.toJSON();
