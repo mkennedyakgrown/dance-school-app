@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { MenuItem, Menu, Button } from "semantic-ui-react";
 import "../App.css";
 
 function NavBar({ user, setUser }) {
   const [activeItem, setActiveItem] = useState("dashboard");
+
+  const navigate = useNavigate();
 
   function handleItemClick(e, { name }) {
     setActiveItem(name);
@@ -15,6 +17,7 @@ function NavBar({ user, setUser }) {
       method: "DELETE",
     }).then(() => {
       setUser({});
+      navigate("/login");
     });
   }
 

@@ -193,15 +193,17 @@ class CourseReports(Resource):
     report = CourseReport(
         user_id=json.get('user_id'),
         course_id=json.get('course_id'),
-        content=json.get('content'),
-        date=json.get('date'),
-        approved=json.get('approved')
+        content=json.get('content', ''),
+        content_json=json.get('content_json', ''),
+        date=datetime.now(),
+        approved=json.get('approved', False)
     )
     try:
         db.session.add(report)
         db.session.commit()
         return course_report_schema.dump(report), 201
     except IntegrityError:
+        print(json)
         return {'message': 'Error creating report'}, 422
       
 class StudentReports(Resource):
@@ -219,6 +221,7 @@ class StudentReports(Resource):
         student_id=json.get('student_id'),
         course_id=json.get('course_id'),
         content=json.get('content'),
+        content_json=json.get('content_json'),
         date=json.get('date'),
         approved=json.get('approved')
     )
@@ -243,27 +246,26 @@ class StudentReportsByInstructor(Resource):
   
 class CourseReportById(Resource):
    
-  def get(self, course_id, report_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    report = course.reports.filter(CourseReport.id == report_id).first()
+  def get(self, report_id):
+    report = CourseReport.query.filter(CourseReport.id == report_id).first()
     return course_report_schema.dump(report), 200
   
-  def patch(self, course_id, report_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    report = course.reports.filter(CourseReport.id == report_id).first()
+  def patch(self, report_id):
+    report = CourseReport.query.filter(CourseReport.id == report_id).first()
     json = request.get_json()
     if json.get('content'):
       report.content = json.get('content')
+    if json.get('content_json'):
+      report.content_json = json.get('content_json')
     if json.get('date'):
-      report.date = json.get('date')
+      report.date = datetime.now()
     if json.get('approved'):
       report.approved = json.get('approved')
     db.session.commit()
     return course_report_schema.dump(report), 200
   
-  def delete(self, course_id, report_id):
-    course = Course.query.filter(Course.id == course_id).first()
-    report = course.reports.filter(CourseReport.id == report_id).first()
+  def delete(self, report_id):
+    report = CourseReport.query.filter(CourseReport.id == report_id).first()
     db.session.delete(report)
     db.session.commit()
     return {'message': 'Report deleted'}, 200
@@ -795,6 +797,7 @@ api.add_resource(Logout, '/logout')
 api.add_resource(CheckSession, '/check-session')
 api.add_resource(StudentReports, '/student-reports')
 api.add_resource(CourseReports, '/course-reports')
+api.add_resource(CourseReportById, '/course-reports/<int:report_id>')
 api.add_resource(Roles, '/roles')
 api.add_resource(RoleById, '/roles/<int:role_id>')
 api.add_resource(Courses, '/courses')
@@ -829,8 +832,8 @@ class UserSchema(ma.SQLAlchemySchema):
   email_address = ma.auto_field()
   roles = fields.Nested('RoleSchema', exclude=['users'], many=True)
   courses = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=True)
-  student_reports = fields.Nested('StudentReportSchema', only=['id', 'student', 'course', 'content', 'date', 'approved'], many=True)
-  course_reports = fields.Nested('CourseReportSchema', only=['id', 'course', 'content', 'date', 'approved'], many=True)
+  student_reports = fields.Nested('StudentReportSchema', only=['id', 'student', 'course', 'content', 'content_json', 'date', 'approved'], many=True)
+  course_reports = fields.Nested('CourseReportSchema', only=['id', 'course', 'content', 'content_json', 'date', 'approved'], many=True)
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
@@ -861,8 +864,8 @@ class CourseSchema(ma.SQLAlchemySchema):
   level = fields.Nested('LevelSchema', only=['id', 'name'], many=False)
   users = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=True)
   students = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=True)
-  course_reports = fields.Nested('CourseReportSchema', only=['id', 'user', 'content', 'date', 'approved'], many=True)
-  student_reports = fields.Nested('StudentReportSchema', only=['id', 'student', 'user', 'content', 'date', 'approved'], many=True)
+  course_reports = fields.Nested('CourseReportSchema', only=['id', 'user', 'content', 'content_json', 'date', 'approved'], many=True)
+  student_reports = fields.Nested('StudentReportSchema', only=['id', 'student', 'user', 'content', 'content_json', 'date', 'approved'], many=True)
   placements = fields.Nested('PlacementSchema', only=['id', 'student', 'date'], many=True)
 
 course_schema = CourseSchema()
@@ -939,6 +942,7 @@ class StudentReportSchema(ma.SQLAlchemySchema):
   course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
   user = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=False)
   content = ma.auto_field()
+  content_json = ma.auto_field()
   date = ma.auto_field()
   approved = ma.auto_field()
 
@@ -955,6 +959,7 @@ class CourseReportSchema(ma.SQLAlchemySchema):
   course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
   user = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=False)
   content = ma.auto_field()
+  content_json = ma.auto_field()
   date = ma.auto_field()
   approved = ma.auto_field()
 

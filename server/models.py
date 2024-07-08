@@ -295,6 +295,7 @@ class StudentReport(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    content_json = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     approved = db.Column(db.Boolean, nullable=False, default=False)
 
@@ -331,6 +332,7 @@ class CourseReport(db.Model, SerializerMixin):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    content_json = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     approved = db.Column(db.Boolean, nullable=False)
 

@@ -6,19 +6,18 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-import { useFormik } from "formik";
-import * as yup from "yup";
 import ToolbarPlugin from "./ToolbarPlugin";
 import ExampleTheme from "./ExampleTheme";
 import "../styles.css";
 import TextEditorSaveButton from "./TextEditorSaveButton";
 
-function ReportTextEditor({ formik }) {
+function ReportTextEditor({ formik, report }) {
   const [editorState, setEditorState] = useState(null);
 
   function onChange(editorState) {
     const editorStateJSON = editorState.toJSON();
     setEditorState(JSON.stringify(editorStateJSON));
+    formik.setFieldValue("content_json", JSON.stringify(editorStateJSON));
   }
 
   function onError(error) {
@@ -30,12 +29,19 @@ function ReportTextEditor({ formik }) {
   const editorConfig = {
     namespace: "myEditor",
     theme: ExampleTheme,
-    nodes: [],
     onError,
   };
 
+  const emptyEditorState =
+    '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
+
   return (
-    <LexicalComposer initialConfig={editorConfig}>
+    <LexicalComposer
+      initialConfig={{
+        ...editorConfig,
+        editorState: report ? report.content_json : emptyEditorState,
+      }}
+    >
       <div className="editor-container">
         <ToolbarPlugin editorType={"report"} />
         <div className="editor-inner">
