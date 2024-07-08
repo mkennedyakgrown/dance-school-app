@@ -14,7 +14,7 @@ function TextEditorSaveButton({ formik }) {
     });
   }
   return (
-    <Button type="button" onClick={handleExportToHtml}>
+    <Button type="button" color="blue" onClick={handleExportToHtml}>
       Save
     </Button>
   );

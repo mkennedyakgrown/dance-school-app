@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import ReportTextEditor from "./ReportTextEditor";
 import { useFormik } from "formik";
-import { Button, TableCell, TableRow } from "semantic-ui-react";
+import { Button, Popup, TableCell, TableRow } from "semantic-ui-react";
 import * as yup from "yup";
 
 function ReportRow({
@@ -14,6 +14,8 @@ function ReportRow({
 }) {
   const [report, setReport] = useState(currReport);
   const [isActive, setIsActive] = useState(false);
+  const [popupIsOpen, setPopupIsOpen] = useState(false);
+
   const formSchema = yup.object().shape({
     user_id: yup.number().required(),
     course_id: yup.number().required(),
@@ -55,6 +57,7 @@ function ReportRow({
           .then((res) => res.json())
           .then((data) => {
             setReport(data);
+            handleOpenPopup();
           });
       } else if (reportType === "course" && report) {
         console.log("PATCHING course report");
@@ -71,6 +74,7 @@ function ReportRow({
           .then((res) => res.json())
           .then((data) => {
             setReport(data);
+            handleOpenPopup();
           });
       } else if (reportType === "student" && !report) {
         console.log("POSTING new student report", values);
@@ -90,6 +94,7 @@ function ReportRow({
           .then((res) => res.json())
           .then((data) => {
             setReport(data);
+            handleOpenPopup();
           });
       } else if (reportType === "student" && report) {
         console.log("PATCHING student report");
@@ -107,17 +112,27 @@ function ReportRow({
           .then((res) => res.json())
           .then((data) => {
             setReport(data);
+            handleOpenPopup();
           });
       }
     },
   });
+
+  function handleOpenPopup() {
+    setPopupIsOpen(true);
+    const timeout = setTimeout(() => {
+      setPopupIsOpen(false);
+    }, 2000);
+  }
 
   return (
     <TableRow>
       <TableCell>{label}</TableCell>
       <TableCell>
         {isActive ? (
-          <ReportTextEditor {...{ formik, report }} />
+          <ReportTextEditor
+            {...{ formik, report, popupIsOpen, setPopupIsOpen }}
+          />
         ) : (
           <iframe
             src={`data:text/html,${

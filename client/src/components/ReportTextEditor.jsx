@@ -10,8 +10,9 @@ import ToolbarPlugin from "./ToolbarPlugin";
 import ExampleTheme from "./ExampleTheme";
 import "../styles.css";
 import TextEditorSaveButton from "./TextEditorSaveButton";
+import { Popup } from "semantic-ui-react";
 
-function ReportTextEditor({ formik, report }) {
+function ReportTextEditor({ formik, report, popupIsOpen, setPopupIsOpen }) {
   const [editorState, setEditorState] = useState(null);
 
   function onChange(editorState) {
@@ -55,7 +56,13 @@ function ReportTextEditor({ formik, report }) {
           <HistoryPlugin />
           <AutoFocusPlugin />
           <OnChangePlugin onChange={onChange} />
-          <TextEditorSaveButton formik={formik} />
+
+          <Popup
+            open={popupIsOpen}
+            trigger={<TextEditorSaveButton formik={formik} />}
+            content="Saved!"
+            position="right center"
+          />
         </div>
       </div>
     </LexicalComposer>
