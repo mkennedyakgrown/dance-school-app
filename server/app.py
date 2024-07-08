@@ -213,17 +213,16 @@ class StudentReports(Resource):
     limit = request.args.get('limit', 100, type=int)
     return student_reports_schema.dump(StudentReport.query.order_by(StudentReport.date).offset(offset).limit(limit).all()), 200
   
-  def post(self, student_id):
+  def post(self):
     json = request.get_json()
-    student = Student.query.filter(Student.id == student_id).first()
     report = StudentReport(
         user_id=json.get('user_id'),
         student_id=json.get('student_id'),
         course_id=json.get('course_id'),
         content=json.get('content'),
         content_json=json.get('content_json'),
-        date=json.get('date'),
-        approved=json.get('approved')
+        date=datetime.now(),
+        approved=json.get('approved', False)
     )
     try:
         db.session.add(report)

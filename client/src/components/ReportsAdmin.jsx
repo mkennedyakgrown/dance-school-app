@@ -59,17 +59,41 @@ function ReportsAdmin() {
             .toLowerCase()
             .includes(studentsFilter.toLowerCase())
         )
-        .map((student) => (
-          <ReportRow
-            key={`${student.first_name}-${student.last_name}-${selectedCourse.name}`}
-            {...{
-              label: `${student.first_name} ${student.last_name} - ${selectedCourse.name}`,
-              reportType: "student",
-              currReport: null,
-              student_id: student.id,
-            }}
-          />
-        ))
+        .map((student) => {
+          console.log(student);
+          const studentReport = selectedCourse.student_reports.find(
+            (report) => report.student_id === student.id
+          );
+          if (studentReport) {
+            return (
+              <ReportRow
+                key={`${student.first_name}-${student.last_name}-${selectedCourse.name}`}
+                {...{
+                  label: `${student.first_name} ${student.last_name} - ${selectedCourse.name}`,
+                  reportType: "student",
+                  currReport: studentReport,
+                  user_id: studentReport.user.id,
+                  course_id: selectedCourse.id,
+                  student_id: student.id,
+                }}
+              />
+            );
+          } else {
+            return (
+              <ReportRow
+                key={`${student.first_name}-${student.last_name}-${selectedCourse.name}`}
+                {...{
+                  label: `${student.first_name} ${student.last_name} - ${selectedCourse.name}`,
+                  reportType: "student",
+                  currReport: null,
+                  user_id: selectedCourse.users[0].id,
+                  course_id: selectedCourse.id,
+                  student_id: student.id,
+                }}
+              />
+            );
+          }
+        })
     : [];
 
   return (

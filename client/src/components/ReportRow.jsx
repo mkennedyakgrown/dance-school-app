@@ -71,7 +71,7 @@ function ReportRow({
             setReport(data);
           });
       } else if (reportType === "student" && !report) {
-        console.log("POSTING new student report");
+        console.log("POSTING new student report", values);
         fetch("api/student-reports", {
           method: "POST",
           headers: {
@@ -93,7 +93,8 @@ function ReportRow({
     },
   });
 
-  console.log(formik.errors);
+  console.log(label, formik.errors);
+  console.log(formik.values);
 
   return (
     <TableRow>
