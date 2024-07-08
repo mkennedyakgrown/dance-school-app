@@ -23,21 +23,26 @@ function ReportsInstructor({ user }) {
         .filter((course) =>
           course.name.toLowerCase().includes(coursesFilter.toLowerCase())
         )
-        .map((course) => (
-          <ReportRow
-            key={`${course.name}-${user.first_name}-${user.last_name}`}
-            {...{
-              label: `${course.name} - ${user.first_name} ${user.last_name}`,
-              reportType: "course",
-              report:
-                user.course_reports.find(
-                  (report) => report.course_id === course.id
-                ) || {},
-              course_id: course.id,
-              user_id: user.id,
-            }}
-          />
-        ))
+        .map((course) => {
+          console.log(course, user);
+          console.log(
+            user.course_reports.find((report) => report.course.id === course.id)
+          );
+          return (
+            <ReportRow
+              key={`${course.name}-${user.first_name}-${user.last_name}`}
+              {...{
+                label: `${course.name} - ${user.first_name} ${user.last_name}`,
+                reportType: "course",
+                currReport: user.course_reports.find(
+                  (report) => report.course.id === course.id
+                ),
+                course_id: course.id,
+                user_id: user.id,
+              }}
+            />
+          );
+        })
     : [];
 
   const studentRows = user.courses
@@ -60,7 +65,7 @@ function ReportsInstructor({ user }) {
             {...{
               label: `${student.first_name} ${student.last_name} - ${student.course_name}`,
               reportType: "student",
-              report: {},
+              currReport: {},
               course_id: student.course_id,
               student_id: student.id,
               user_id: user.id,

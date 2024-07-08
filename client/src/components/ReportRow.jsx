@@ -125,14 +125,14 @@ function ReportRow({
     }, 2000);
   }
 
+  console.log(currReport);
+
   return (
     <TableRow>
       <TableCell>{label}</TableCell>
       <TableCell>
         {isActive ? (
-          <ReportTextEditor
-            {...{ formik, report, popupIsOpen, setPopupIsOpen }}
-          />
+          <ReportTextEditor {...{ formik, report, popupIsOpen }} />
         ) : (
           <iframe
             src={`data:text/html,${

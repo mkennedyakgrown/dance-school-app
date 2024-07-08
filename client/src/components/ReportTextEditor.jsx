@@ -12,7 +12,7 @@ import "../styles.css";
 import TextEditorSaveButton from "./TextEditorSaveButton";
 import { Popup } from "semantic-ui-react";
 
-function ReportTextEditor({ formik, report, popupIsOpen, setPopupIsOpen }) {
+function ReportTextEditor({ formik, report, popupIsOpen }) {
   const [editorState, setEditorState] = useState(null);
 
   function onChange(editorState) {
