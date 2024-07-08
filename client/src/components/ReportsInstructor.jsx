@@ -24,10 +24,6 @@ function ReportsInstructor({ user }) {
           course.name.toLowerCase().includes(coursesFilter.toLowerCase())
         )
         .map((course) => {
-          console.log(course, user);
-          console.log(
-            user.course_reports.find((report) => report.course.id === course.id)
-          );
           return (
             <ReportRow
               key={`${course.name}-${user.first_name}-${user.last_name}`}
@@ -53,25 +49,31 @@ function ReportsInstructor({ user }) {
             ...student,
             course_name: course.name,
             course_id: course.id,
+            report: course.student_reports.find(
+              (report) => report.student.id === student.id
+            ),
           }))
         )
         .reduce((acc, curr) => acc.concat(curr), [])
         .filter((student) =>
           `${student.first_name} ${student.last_name}`.includes(studentsFilter)
         )
-        .map((student) => (
-          <ReportRow
-            key={`${student.first_name}-${student.last_name}-${student.course_name}`}
-            {...{
-              label: `${student.first_name} ${student.last_name} - ${student.course_name}`,
-              reportType: "student",
-              currReport: {},
-              course_id: student.course_id,
-              student_id: student.id,
-              user_id: user.id,
-            }}
-          />
-        ))
+        .map((student) => {
+          return (
+            <ReportRow
+              key={`${student.first_name}-${student.last_name}-${student.course_name}`}
+              {...{
+                label: `${student.first_name} ${student.last_name} - ${student.course_name}`,
+                reportType: "student",
+                currReport:
+                  student.report !== undefined ? student.report : null,
+                course_id: student.course_id,
+                student_id: student.id,
+                user_id: user.id,
+              }}
+            />
+          );
+        })
     : [];
 
   return (

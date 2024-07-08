@@ -125,8 +125,6 @@ function ReportRow({
     }, 2000);
   }
 
-  console.log(currReport);
-
   return (
     <TableRow>
       <TableCell>{label}</TableCell>
