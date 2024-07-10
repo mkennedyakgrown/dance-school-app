@@ -69,6 +69,7 @@ function Emails() {
             );
             setCurrStudent({ ...currStudent, email: data });
             formik.setFieldValue("id", data.id);
+            console.log(data);
           });
       } else {
         fetch(`/api/emails/${values.id}`, {

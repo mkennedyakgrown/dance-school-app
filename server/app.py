@@ -911,7 +911,7 @@ class StudentSchema(ma.SQLAlchemySchema):
   gender = ma.auto_field()
   courses = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level', 'users'], many=True)
   student_reports = fields.Nested('StudentReportSchema', exclude=['student'], many=True)
-  email = fields.Nested('EmailSchema', exclude=['student'], many=False)
+  email = fields.Nested('EmailSchema', only=['id', 'email_address', 'secondary_email_address', 'content', 'content_json', 'date', 'approved'], many=True)
   placements = fields.Nested('PlacementSchema', exclude=['student'], many=True)
 
 student_schema = StudentSchema()
@@ -1018,7 +1018,9 @@ class EmailSchema(ma.SQLAlchemySchema):
   email_address = ma.auto_field()
   secondary_email_address = ma.auto_field()
   content = ma.auto_field()
+  content_json = ma.auto_field()
   date = ma.auto_field()
+  approved = ma.auto_field()
 
 email_schema = EmailSchema()
 emails_schema = EmailSchema(many=True)

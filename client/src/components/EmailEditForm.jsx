@@ -124,20 +124,22 @@ function EmailEditForm({ formik, currStudent }) {
         .reduce((acc, curr) => [...acc, ...curr], [])
     : [];
 
-  const newEmailBody = JSON.stringify({
-    root: {
-      children: placements.length > 0 ? [...placements, ...reports] : [],
-      direction: "ltr",
-      format: "center",
-      indent: 0,
-      type: "root",
-      version: 1,
-    },
-  });
+  const EmailBody = currStudent.email
+    ? currStudent.email[0].content_json
+    : JSON.stringify({
+        root: {
+          children: placements.length > 0 ? [...placements, ...reports] : [],
+          direction: "ltr",
+          format: "center",
+          indent: 0,
+          type: "root",
+          version: 1,
+        },
+      });
 
   const textEditor =
     formik.values.selectedEmail === 0 ? null : (
-      <EmailTextEditor {...{ formik, popupIsOpen, newEmailBody }} />
+      <EmailTextEditor {...{ formik, popupIsOpen, EmailBody }} />
     );
 
   return (

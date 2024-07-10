@@ -204,7 +204,7 @@ class Student(db.Model, SerializerMixin):
     gender = db.relationship('Gender', back_populates='students')
     courses = db.relationship('Course', secondary='students_courses', back_populates='students')
     student_reports = db.relationship('StudentReport', back_populates='student', cascade='all, delete')
-    email = db.relationship('Email', back_populates='student', cascade='all, delete')
+    email = db.relationship('Email', back_populates='student', cascade='delete')
     placements = db.relationship('Placement', back_populates='student', cascade='all, delete')
 
     @validates('first_name')
