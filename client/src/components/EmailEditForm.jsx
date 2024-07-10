@@ -12,8 +12,6 @@ function EmailEditForm({ formik, currStudent }) {
     }, 2000);
   }
 
-  console.log(currStudent);
-
   const placements = currStudent.placements
     ? currStudent.placements.map((placement) => {
         return {
@@ -103,9 +101,11 @@ function EmailEditForm({ formik, currStudent }) {
               },
             ],
           };
-          const courseReportText = report.course.course_reports.find(
+          const courseReport = report.course.course_reports.find(
             (r) => r.user.id === report.user.id
-          ).content_json;
+          );
+          const courseReportText = JSON.parse(courseReport.content_json).root
+            .children[0];
           const reportText = JSON.parse(report.content_json).root.children;
           const emptyParagraph = {
             ...paragraphSchema,
@@ -114,9 +114,11 @@ function EmailEditForm({ formik, currStudent }) {
           return [
             courseName,
             emptyParagraph,
-            ...courseReportText,
+            courseReportText,
             ...reportText,
             instructorSignature,
+            emptyParagraph,
+            emptyParagraph,
           ];
         })
         .reduce((acc, curr) => [...acc, ...curr], [])
