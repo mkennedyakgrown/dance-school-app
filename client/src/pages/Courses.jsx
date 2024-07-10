@@ -11,6 +11,7 @@ import {
   Icon,
   Form,
   Confirm,
+  GridColumn,
 } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -265,94 +266,98 @@ function Courses() {
             />
           </Form.Field>
         </GridRow>
-        <GridRow>
-          <Form.Field>
-            <Label>Instructors</Label>
-            <Dropdown
-              search
-              name="instructors-dropdown"
-              placeholder="Select an Instructor"
-              options={
-                instructors
-                  ? instructors
-                      .filter(
-                        (instructor) =>
-                          !formik.values.user_ids.includes(instructor.id)
-                      )
-                      .map((instructor) => {
-                        return {
-                          key: instructor.id,
-                          text:
-                            instructor.first_name + " " + instructor.last_name,
-                          value: instructor.id,
-                        };
-                      })
-                  : []
-              }
-              value={selectedInstructor}
-              onChange={(e, { value }) => {
-                setSelectedInstructor(value);
-              }}
-            />
-            <Button
-              type="button"
-              size="mini"
-              color="blue"
-              onClick={() => {
-                formik.setFieldValue("user_ids", [
-                  ...formik.values.user_ids,
-                  selectedInstructor,
-                ]);
-              }}
-            >
-              Add Instructor
-            </Button>
-            <List>{instructorsList}</List>
-          </Form.Field>
-        </GridRow>
-        <GridRow>
-          <Form.Field>
-            <Label>Students</Label>
-            <Dropdown
-              search
-              name="students-dropdown"
-              placeholder="Select a Student"
-              options={
-                students
-                  ? students
-                      .filter(
-                        (student) =>
-                          !formik.values.student_ids.includes(student.id)
-                      )
-                      .map((student) => {
-                        return {
-                          key: student.id,
-                          text: student.first_name + " " + student.last_name,
-                          value: student.id,
-                        };
-                      })
-                  : []
-              }
-              value={selectedStudent}
-              onChange={(e, { value }) => {
-                setSelectedStudent(value);
-              }}
-            />
-            <Button
-              type="button"
-              size="mini"
-              color="blue"
-              onClick={() => {
-                formik.setFieldValue("student_ids", [
-                  ...formik.values.student_ids,
-                  selectedStudent,
-                ]);
-              }}
-            >
-              Add Student
-            </Button>
-            <List>{studentsList}</List>
-          </Form.Field>
+        <GridRow columns={2} centered>
+          <GridColumn>
+            <Form.Field>
+              <Label>Instructors</Label>
+              <Dropdown
+                search
+                name="instructors-dropdown"
+                placeholder="Select an Instructor"
+                options={
+                  instructors
+                    ? instructors
+                        .filter(
+                          (instructor) =>
+                            !formik.values.user_ids.includes(instructor.id)
+                        )
+                        .map((instructor) => {
+                          return {
+                            key: instructor.id,
+                            text:
+                              instructor.first_name +
+                              " " +
+                              instructor.last_name,
+                            value: instructor.id,
+                          };
+                        })
+                    : []
+                }
+                value={selectedInstructor}
+                onChange={(e, { value }) => {
+                  setSelectedInstructor(value);
+                }}
+              />
+              <Button
+                type="button"
+                size="mini"
+                color="blue"
+                onClick={() => {
+                  formik.setFieldValue("user_ids", [
+                    ...formik.values.user_ids,
+                    selectedInstructor,
+                  ]);
+                }}
+              >
+                Add Instructor
+              </Button>
+              <List>{instructorsList}</List>
+            </Form.Field>
+          </GridColumn>
+          <GridColumn>
+            <Form.Field>
+              <Label>Students</Label>
+              <Dropdown
+                search
+                name="students-dropdown"
+                placeholder="Select a Student"
+                options={
+                  students
+                    ? students
+                        .filter(
+                          (student) =>
+                            !formik.values.student_ids.includes(student.id)
+                        )
+                        .map((student) => {
+                          return {
+                            key: student.id,
+                            text: student.first_name + " " + student.last_name,
+                            value: student.id,
+                          };
+                        })
+                    : []
+                }
+                value={selectedStudent}
+                onChange={(e, { value }) => {
+                  setSelectedStudent(value);
+                }}
+              />
+              <Button
+                type="button"
+                size="mini"
+                color="blue"
+                onClick={() => {
+                  formik.setFieldValue("student_ids", [
+                    ...formik.values.student_ids,
+                    selectedStudent,
+                  ]);
+                }}
+              >
+                Add Student
+              </Button>
+              <List>{studentsList}</List>
+            </Form.Field>
+          </GridColumn>
         </GridRow>
         <Button type="submit" color="green">
           {formik.values.id === 0 ? "Create Course" : "Save Changes"}

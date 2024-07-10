@@ -13,7 +13,6 @@ class Login(Resource):
     json = request.get_json()
     email_address = json.get('email_address')
     user = User.query.filter(User.email_address == email_address).first()
-    print(user)
     password = json.get('password')
     if user is not None and user.authenticate(password) == True:
         session['user_id'] = user.id
@@ -203,7 +202,6 @@ class CourseReports(Resource):
         db.session.commit()
         return course_report_schema.dump(report), 201
     except IntegrityError:
-        print(json)
         return {'message': 'Error creating report'}, 422
       
 class StudentReports(Resource):
@@ -307,7 +305,6 @@ class Placements(Resource):
           student_id=json.get('student_id'),
           date=datetime.now()
       )
-      print(placement)
       try:
           db.session.add(placement)
           db.session.commit()
@@ -549,7 +546,8 @@ class Emails(Resource):
         student_id=json.get('student_id'),
         email_address=json.get('email_address'),
         content=json.get('content'),
-        date=convert_to_date(json.get('date'))
+        content_json=json.get('content_json'),
+        date=datetime.now(),
     )
     try:
         db.session.add(email)
@@ -573,8 +571,11 @@ class EmailById(Resource):
       email.secondary_email_address = json.get('secondary_email_address')
     if json.get('content'):
       email.content = json.get('content')
-    if json.get('date'):
-      email.date = convert_to_date(json.get('date'))
+    if json.get('content_json'):
+      email.content_json = json.get('content_json')
+    if json.get('approved'):
+      email.approved = json.get('approved') if json.get('approved') is type(bool) else False
+    email.date = datetime.now()
     db.session.commit()
     return email_schema.dump(email), 200
   
@@ -937,7 +938,7 @@ class StudentReportSchema(ma.SQLAlchemySchema):
 
   id = ma.auto_field()
   student = fields.Nested('StudentSchema', only=['id', 'first_name', 'last_name', 'email_address', 'secondary_email_address', 'birth_date', 'gender'], many=False)
-  course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level'], many=False)
+  course = fields.Nested('CourseSchema', only=['id', 'name', 'discipline', 'level', 'course_reports'], many=False)
   user = fields.Nested('UserSchema', only=['id', 'first_name', 'last_name', 'email_address'], many=False)
   content = ma.auto_field()
   content_json = ma.auto_field()

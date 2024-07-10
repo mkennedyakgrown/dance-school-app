@@ -67,7 +67,7 @@ if __name__ == "__main__":
             user_id=course.users[0].id,
             course_id=course.id,
             content="Write your report here",
-            content_json='{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Write your report here","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
+            content_json='{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Write your report here","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"center","indent":0,"type":"root","version":1}}',
             date=datetime.now(),
             approved=False
           )
@@ -80,7 +80,7 @@ if __name__ == "__main__":
           course_id = course.id,
           user_id = course.users[0].id,
           content = "Write your report here",
-          content_json = '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Write your report here","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}',
+          content_json = '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"Write your report here","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":"ltr","format":"center","indent":0,"type":"root","version":1}}',
           date = datetime.now(),
           approved = False
         )

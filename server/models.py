@@ -425,6 +425,7 @@ class Email(db.Model, SerializerMixin):
     email_address = db.Column(db.String(20), nullable=False)
     secondary_email_address = db.Column(db.String(20), nullable=True)
     content = db.Column(db.Text, nullable=False)
+    content_json = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     approved = db.Column(db.Boolean, nullable=False, default=False)
 
