@@ -15,6 +15,7 @@ import {
 } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useOutletContext, useNavigate } from "react-router-dom";
 
 function Courses() {
   const [courses, setCourses] = useState([]);
@@ -25,7 +26,16 @@ function Courses() {
   const [students, setStudents] = useState([]);
   const [deleteActive, setDeleteActive] = useState(false);
 
+  const { user } = useOutletContext();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user.email_address) {
+      navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
+    }
     fetch("/api/courses")
       .then((r) => r.json())
       .then((data) => {
@@ -98,7 +108,6 @@ function Courses() {
             return data;
           })
           .then((data) => {
-            console.log(data);
             formik.setValues({
               id: data.id,
               name: data.name,

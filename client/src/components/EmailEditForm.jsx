@@ -185,7 +185,6 @@ function EmailEditForm({
     })
       .then((r) => r.json())
       .then((data) => {
-        console.log(data);
         setStudents(
           students.map((student) => {
             if (student.id === data.student.id) {

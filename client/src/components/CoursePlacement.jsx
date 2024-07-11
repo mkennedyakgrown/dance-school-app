@@ -31,7 +31,6 @@ function CoursePlacement({ course, students, courses, setCourses }) {
       })
         .then((r) => r.json())
         .then((data) => {
-          console.log(data);
           setCurrCourse({
             ...currCourse,
             placements: [...currCourse.placements, data],
@@ -40,8 +39,6 @@ function CoursePlacement({ course, students, courses, setCourses }) {
         });
     },
   });
-
-  console.log(currCourse);
 
   const courseStudentsIds =
     currCourse.placements.length > 0

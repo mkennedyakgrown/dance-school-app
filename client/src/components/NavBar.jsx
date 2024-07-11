@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { MenuItem, Menu, Button } from "semantic-ui-react";
+import { useOutletContext } from "react-router-dom";
 import "../App.css";
 
 function NavBar({ user, setUser }) {
   const [activeItem, setActiveItem] = useState("dashboard");
+
+  const userRoles = user.roles ? user.roles.map((role) => role.name) : [];
 
   const navigate = useNavigate();
 
@@ -23,15 +26,18 @@ function NavBar({ user, setUser }) {
 
   return (
     <Menu fixed="top" className="navBar" fluid>
-      <MenuItem
-        name="dashboard"
-        as={NavLink}
-        to="/"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Dashboard
-      </MenuItem>
+      <h3>MyDanceSchoolApp</h3>
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="dashboard"
+          as={NavLink}
+          to="/"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Dashboard
+        </MenuItem>
+      )}
       <MenuItem
         name="reports"
         as={NavLink}
@@ -41,60 +47,72 @@ function NavBar({ user, setUser }) {
       >
         Reports
       </MenuItem>
-      <MenuItem
-        name="placements"
-        as={NavLink}
-        to="/placements"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Placements
-      </MenuItem>
-      <MenuItem
-        name="suggestions"
-        as={NavLink}
-        to="/suggestions"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Suggestions
-      </MenuItem>
-      <MenuItem
-        name="instructors"
-        as={NavLink}
-        to="/instructors"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Instructors
-      </MenuItem>
-      <MenuItem
-        name="courses"
-        as={NavLink}
-        to="/courses"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Courses
-      </MenuItem>
-      <MenuItem
-        name="students"
-        as={NavLink}
-        to="/students"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Students
-      </MenuItem>
-      <MenuItem
-        name="emails"
-        as={NavLink}
-        to="/emails"
-        className="nav-link"
-        onClick={handleItemClick}
-      >
-        Emails
-      </MenuItem>
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="placements"
+          as={NavLink}
+          to="/placements"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Placements
+        </MenuItem>
+      )}
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="suggestions"
+          as={NavLink}
+          to="/suggestions"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Suggestions
+        </MenuItem>
+      )}
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="instructors"
+          as={NavLink}
+          to="/instructors"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Instructors
+        </MenuItem>
+      )}
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="courses"
+          as={NavLink}
+          to="/courses"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Courses
+        </MenuItem>
+      )}
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="students"
+          as={NavLink}
+          to="/students"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Students
+        </MenuItem>
+      )}
+      {userRoles.includes("Admin") && (
+        <MenuItem
+          name="emails"
+          as={NavLink}
+          to="/emails"
+          className="nav-link"
+          onClick={handleItemClick}
+        >
+          Emails
+        </MenuItem>
+      )}
       <MenuItem
         name="profile"
         as={NavLink}

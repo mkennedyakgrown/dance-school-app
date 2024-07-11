@@ -10,6 +10,7 @@ import {
 } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import EmailEditForm from "../components/EmailEditForm";
 
 function Emails() {
@@ -18,7 +19,16 @@ function Emails() {
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
 
+  const { user } = useOutletContext();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user.email_address) {
+      navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
+    }
     fetch("/api/students")
       .then((r) => r.json())
       .then((data) => {
@@ -54,7 +64,6 @@ function Emails() {
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
-      console.log("Submitted", values);
       if (currStudent.email.length === 0) {
         fetch(`/api/emails`, {
           method: "POST",
@@ -80,7 +89,6 @@ function Emails() {
             setCurrStudent({ ...currStudent, email: [data] });
             formik.setFieldValue("id", data.id);
             handleOpenPopup();
-            console.log(data);
           });
       } else {
         fetch(`/api/emails/${currStudent.email[0].id}`, {

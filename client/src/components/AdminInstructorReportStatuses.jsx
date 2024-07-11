@@ -8,14 +8,13 @@ import {
   Table,
 } from "semantic-ui-react";
 
-function InstructorReportStatuses() {
+function AdminInstructorReportStatuses() {
   const [instructors, setInstructors] = useState([]);
 
   useEffect(() => {
     fetch("/api/instructors-statuses")
       .then((r) => r.json())
       .then((data) => {
-        console.log(data);
         setInstructors(data);
       });
   }, []);
@@ -50,4 +49,4 @@ function InstructorReportStatuses() {
   );
 }
 
-export default InstructorReportStatuses;
+export default AdminInstructorReportStatuses;

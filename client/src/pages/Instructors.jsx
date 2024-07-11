@@ -8,6 +8,7 @@ import {
   TableBody,
   Icon,
 } from "semantic-ui-react";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import InstructorRow from "../components/InstructorRow";
 import InstructorRowNew from "../components/InstructorRowNew";
 
@@ -17,7 +18,16 @@ function Instructors() {
   const [roles, setRoles] = useState([]);
   const [sortSelection, setSortSelection] = useState("");
 
+  const { user } = useOutletContext();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user.email_address) {
+      navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
+    }
     fetch("/api/users")
       .then((r) => r.json())
       .then((data) => {

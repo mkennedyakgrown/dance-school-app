@@ -10,6 +10,8 @@ function Dashboard() {
   useEffect(() => {
     if (!user.email_address) {
       navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
     }
   }, [user]);
 

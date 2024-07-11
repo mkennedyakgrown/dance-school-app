@@ -41,7 +41,6 @@ function ReportRow({
     validationSchema: formSchema,
     onSubmit: (values) => {
       if (reportType === "course" && !report) {
-        console.log("POSTING new course report");
         fetch("api/course-reports", {
           method: "POST",
           headers: {
@@ -60,7 +59,6 @@ function ReportRow({
             handleOpenPopup();
           });
       } else if (reportType === "course" && report) {
-        console.log("PATCHING course report");
         fetch(`api/course-reports/${report.id}`, {
           method: "PATCH",
           headers: {
@@ -77,7 +75,6 @@ function ReportRow({
             handleOpenPopup();
           });
       } else if (reportType === "student" && !report) {
-        console.log("POSTING new student report", values);
         fetch("api/student-reports", {
           method: "POST",
           headers: {
@@ -97,7 +94,6 @@ function ReportRow({
             handleOpenPopup();
           });
       } else if (reportType === "student" && report) {
-        console.log("PATCHING student report");
         fetch(`api/student-reports/${report.id}`, {
           method: "PATCH",
           headers: {

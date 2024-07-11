@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Dropdown, Header, Button, Grid, GridRow } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useOutletContext, useNavigate } from "react-router-dom";
 
 import EditStudentForm from "../components/EditStudentForm";
 
@@ -10,7 +11,16 @@ function Students() {
   const [courses, setCourses] = useState([]);
   const [genders, setGenders] = useState([]);
 
+  const { user } = useOutletContext();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user.email_address) {
+      navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
+    }
     fetch("/api/students")
       .then((r) => r.json())
       .then((data) => {
@@ -191,7 +201,6 @@ function Students() {
             value={formik.values.id}
             onChange={(e, { value }) => {
               formik.setValues(studentOptions.find((o) => o.value === value));
-              console.log(studentOptions.find((o) => o.value === value));
             }}
           />
           <Button color="grey" type="button" onClick={() => formik.resetForm()}>

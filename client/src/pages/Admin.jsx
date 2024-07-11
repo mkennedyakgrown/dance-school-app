@@ -2,7 +2,7 @@ import { Grid, GridRow, GridColumn, Segment } from "semantic-ui-react";
 
 import LatestReports from "../components/AdminLatestReports.jsx";
 import Statuses from "../components/AdminStatuses.jsx";
-import InstructorReportStatuses from "../components/AdminInstructorReportStatuses.jsx";
+import AdminInstructorReportStatuses from "../components/AdminInstructorReportStatuses.jsx";
 
 function Admin() {
   return (
@@ -21,7 +21,7 @@ function Admin() {
         </GridColumn>
         <GridColumn stretched>
           <Segment>
-            <InstructorReportStatuses />
+            <AdminInstructorReportStatuses />
           </Segment>
         </GridColumn>
       </GridRow>

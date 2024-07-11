@@ -18,12 +18,14 @@ function Reports() {
           </Header>
         </Grid.Row>
         <Grid.Row>
-          <Button
-            type="button"
-            onClick={() => setInstructorView(!instructorView)}
-          >
-            {!instructorView ? "View as Instructor" : "View as Admin"}
-          </Button>
+          {userRoles.includes("Admin") ? (
+            <Button
+              type="button"
+              onClick={() => setInstructorView(!instructorView)}
+            >
+              {!instructorView ? "View as Instructor" : "View as Admin"}
+            </Button>
+          ) : null}
         </Grid.Row>
         <Grid.Row>
           {userRoles.includes("Admin") && !instructorView ? (

@@ -36,7 +36,6 @@ function EmailTextEditor({ formik, popupIsOpen, emailBody, approveButton }) {
   const emptyEditorState =
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
-  console.log(formik.values);
   return (
     <LexicalComposer
       initialConfig={{

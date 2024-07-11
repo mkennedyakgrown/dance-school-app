@@ -105,8 +105,6 @@ function InstructorRowEdit({
     },
   });
 
-  console.log(formik.errors);
-
   const currCourses =
     instructorCourses.length > 0
       ? instructorCourses.map((course) => {

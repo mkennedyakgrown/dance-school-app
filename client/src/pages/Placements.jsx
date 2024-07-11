@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header, Dropdown, Grid } from "semantic-ui-react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import CoursePlacement from "../components/CoursePlacement";
 
 function Placements() {
@@ -7,7 +8,16 @@ function Placements() {
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
 
+  const { user } = useOutletContext();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user.email_address) {
+      navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
+    }
     fetch("/api/disciplines")
       .then((r) => r.json())
       .then((data) => {
@@ -53,7 +63,6 @@ function Placements() {
         options={dropdownOptions}
         onChange={(e, { value }) => {
           setCourses(disciplines.find((d) => d.id === value).courses);
-          console.log(disciplines[value]);
         }}
       />
       <Grid divided>{courseColumns}</Grid>

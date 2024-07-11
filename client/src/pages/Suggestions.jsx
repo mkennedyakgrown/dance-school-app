@@ -9,6 +9,7 @@ import {
   TableCell,
   TableBody,
 } from "semantic-ui-react";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import SuggestionRow from "../components/SuggestionRow";
 
 function Suggestions() {
@@ -19,7 +20,16 @@ function Suggestions() {
   const [genders, setGenders] = useState([]);
   const [sortSelection, setSortSelection] = useState("");
 
+  const { user } = useOutletContext();
+
+  const navigate = useNavigate();
+
   useEffect(() => {
+    if (!user.email_address) {
+      navigate("/login");
+    } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      navigate("/reports");
+    }
     fetch("/api/suggestions")
       .then((r) => r.json())
       .then((data) => {
