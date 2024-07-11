@@ -77,7 +77,7 @@ function Emails() {
                 }
               })
             );
-            setCurrStudent({ ...currStudent, email: data });
+            setCurrStudent({ ...currStudent, email: [data] });
             formik.setFieldValue("id", data.id);
             handleOpenPopup();
             console.log(data);

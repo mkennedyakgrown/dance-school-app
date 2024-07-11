@@ -159,10 +159,10 @@ function EmailEditForm({
         console.log(data);
         setStudents(
           students.map((student) => {
-            if (student.id === data.student_id) {
+            if (student.id === data.student.id) {
               return {
                 ...student,
-                email: data,
+                email: [data],
               };
             } else {
               return student;
@@ -197,9 +197,7 @@ function EmailEditForm({
           onChange={formik.handleChange}
         />
       </GridRow>
-      <GridRow>
-        {formik.values.selectedEmail === 0 ? null : approveButton}
-      </GridRow>
+      <GridRow>{formik.values.id === 0 ? null : approveButton}</GridRow>
       <GridRow>
         <GridColumn width={16}>{textEditor}</GridColumn>
       </GridRow>

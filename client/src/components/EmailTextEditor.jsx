@@ -65,7 +65,7 @@ function EmailTextEditor({ formik, popupIsOpen, emailBody, approveButton }) {
             content="Saved!"
             position="right center"
           />
-          {approveButton}
+          {formik.values.id === 0 ? null : approveButton}
         </div>
       </div>
     </LexicalComposer>
