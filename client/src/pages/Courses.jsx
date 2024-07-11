@@ -17,40 +17,62 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useOutletContext, useNavigate } from "react-router-dom";
 
+/**
+ * Component for managing courses.
+ * @returns {JSX.Element} The rendered component.
+ */
 function Courses() {
+  // State for storing courses
   const [courses, setCourses] = useState([]);
+  // State for storing the current course
   const [currCourse, setCurrCourse] = useState(null);
+  // State for storing disciplines
   const [disciplines, setDisciplines] = useState([]);
+  // State for storing levels
   const [levels, setLevels] = useState([]);
+  // State for storing instructors
   const [instructors, setInstructors] = useState([]);
+  // State for storing students
   const [students, setStudents] = useState([]);
+  // State for toggling the delete course confirmation modal
   const [deleteActive, setDeleteActive] = useState(false);
 
+  // Get the user from the outlet context
   const { user } = useOutletContext();
 
+  // Get the navigate function from the router
   const navigate = useNavigate();
 
+  // Fetch data on component mount
   useEffect(() => {
+    // Redirect to login if user is not logged in
     if (!user.email_address) {
       navigate("/login");
+    }
+    // Redirect to reports if user is not an admin
+    else if (!user.roles.map((r) => r.name).includes("Admin")) {
     } else if (!user.roles.map((r) => r.name).includes("Admin")) {
       navigate("/reports");
     }
+    // Fetch courses
     fetch("/api/courses")
       .then((r) => r.json())
       .then((data) => {
         setCourses(data);
       });
+    // Fetch disciplines
     fetch("/api/disciplines")
       .then((r) => r.json())
       .then((data) => {
         setDisciplines(data);
       });
+    // Fetch levels
     fetch("/api/levels")
       .then((r) => r.json())
       .then((data) => {
         setLevels(data);
       });
+    // Fetch instructors
     fetch("/api/users")
       .then((r) => r.json())
       .then((data) => {
@@ -58,6 +80,7 @@ function Courses() {
           data.filter((user) => user.roles.find((r) => r.name === "Instructor"))
         );
       });
+    // Fetch students
     fetch("/api/students")
       .then((r) => r.json())
       .then((data) => {
@@ -65,9 +88,12 @@ function Courses() {
       });
   }, []);
 
+  // State for storing the selected instructor
   const [selectedInstructor, setSelectedInstructor] = useState(null);
+  // State for storing the selected student
   const [selectedStudent, setSelectedStudent] = useState(null);
 
+  // Form validation schema
   const schema = yup.object().shape({
     id: yup.number().required(),
     name: yup.string().required(),
@@ -78,6 +104,7 @@ function Courses() {
     selectedCourse: yup.number(),
   });
 
+  // Formik hook for handling form submission and validation
   const formik = useFormik({
     initialValues: {
       id: currCourse ? currCourse.id : "",
@@ -92,6 +119,7 @@ function Courses() {
     },
     validationSchema: schema,
     onSubmit: (values) => {
+      // If the course is new, create it
       if (values.id === 0) {
         fetch("/api/courses", {
           method: "POST",
@@ -136,12 +164,14 @@ function Courses() {
     },
   });
 
+  // Generate options for the course dropdown menu
   const courseOptions = [
     {
       key: 0,
       text: "Create a new course",
       value: 0,
     },
+    // Map each course to an object with the necessary properties
     ...courses.map((course) => {
       return {
         key: course.id,
@@ -151,11 +181,15 @@ function Courses() {
     }),
   ];
 
+  // Generate a list of instructors for the current course
   const instructorsList = instructors
+    // Filter the instructors based on the user_ids field in formik.values
     .filter((instructor) => formik.values.user_ids.includes(instructor.id))
+    // Map each instructor to a List.Item component
     .map((instructor) => {
       return (
         <List.Item key={instructor.id}>
+          {/* Button to remove the instructor from the list */}
           <Button
             circular
             size="mini"
@@ -170,16 +204,21 @@ function Courses() {
           >
             <Icon name="remove" />
           </Button>
+          {/* Display the instructor's name */}
           {instructor.first_name} {instructor.last_name}
         </List.Item>
       );
     });
 
+  // Generate a list of students for the current course
   const studentsList = students
+    // Filter the students based on the student_ids field in formik.values
     .filter((student) => formik.values.student_ids.includes(student.id))
+    // Map each student to a List.Item component
     .map((student) => {
       return (
         <List.Item key={student.id}>
+          {/* Button to remove the student from the list */}
           <Button
             circular
             size="mini"
@@ -194,11 +233,15 @@ function Courses() {
           >
             <Icon name="remove" />
           </Button>
+          {/* Display the student's name */}
           {student.first_name} {student.last_name}
         </List.Item>
       );
     });
 
+  /**
+   * Displays an alert indicating the success of the deletion.
+   */
   function handleDelete() {
     fetch(`/api/courses/${formik.values.id}`, {
       method: "DELETE",
@@ -213,10 +256,13 @@ function Courses() {
       });
   }
 
+  // Form to edit a course
   const editCourseForm = (
     <Form onSubmit={formik.handleSubmit}>
+      {/* Grid layout for form fields */}
       <Grid columns="equal" divided centered widths="equal">
         <GridRow>
+          {/* Name field */}
           <Form.Field required>
             <Label>Name</Label>
             <Input
@@ -228,8 +274,10 @@ function Courses() {
           </Form.Field>
         </GridRow>
         <GridRow>
+          {/* Discipline field */}
           <Form.Field required={true}>
             <Label>Discipline</Label>
+            {/* Dropdown for selecting a discipline */}
             <Dropdown
               search
               name="discipline-dropdown"
@@ -251,8 +299,10 @@ function Courses() {
               }}
             />
           </Form.Field>
+          {/* Level field */}
           <Form.Field required={true}>
             <Label>Level</Label>
+            {/* Dropdown for selecting a level */}
             <Dropdown
               search
               name="level-dropdown"
@@ -276,9 +326,11 @@ function Courses() {
           </Form.Field>
         </GridRow>
         <GridRow columns={2} centered>
+          {/* Instructors section */}
           <GridColumn>
             <Form.Field>
               <Label>Instructors</Label>
+              {/* Dropdown for selecting an instructor */}
               <Dropdown
                 search
                 name="instructors-dropdown"
@@ -307,6 +359,7 @@ function Courses() {
                   setSelectedInstructor(value);
                 }}
               />
+              {/* Button to add an instructor */}
               <Button
                 type="button"
                 size="mini"
@@ -320,12 +373,15 @@ function Courses() {
               >
                 Add Instructor
               </Button>
+              {/* List of added instructors */}
               <List>{instructorsList}</List>
             </Form.Field>
           </GridColumn>
+          {/* Students section */}
           <GridColumn>
             <Form.Field>
               <Label>Students</Label>
+              {/* Dropdown for selecting a student */}
               <Dropdown
                 search
                 name="students-dropdown"
@@ -351,6 +407,7 @@ function Courses() {
                   setSelectedStudent(value);
                 }}
               />
+              {/* Button to add a student */}
               <Button
                 type="button"
                 size="mini"
@@ -364,14 +421,17 @@ function Courses() {
               >
                 Add Student
               </Button>
+              {/* List of added students */}
               <List>{studentsList}</List>
             </Form.Field>
           </GridColumn>
         </GridRow>
+        {/* Button to submit the form */}
         <Button type="submit" color="green">
           {formik.values.id === 0 ? "Create Course" : "Save Changes"}
         </Button>
         <GridRow>
+          {/* Button to delete the course */}
           <Button
             type="button"
             color="red"
@@ -381,6 +441,7 @@ function Courses() {
           >
             Delete Course
           </Button>
+          {/* Confirmation modal for deleting the course */}
           <Confirm
             open={deleteActive}
             onCancel={() => setDeleteActive(false)}
@@ -397,9 +458,13 @@ function Courses() {
 
   return (
     <>
+      {/* Header for the page */}
       <Header as="h1">Courses</Header>
+      {/* Grid for the page */}
       <Grid centered>
+        {/* Row for the course dropdown and clear form button */}
         <GridRow>
+          {/* Dropdown to select a course */}
           <Dropdown
             search
             name="course-dropdown"
@@ -407,8 +472,11 @@ function Courses() {
             options={courseOptions}
             value={formik.values.selectedCourse}
             onChange={(e, { value }) => {
+              // Find the new course based on the selected value
               const newCourse = courses.find((c) => c.id === value);
+              // Set the current course to the new course
               setCurrCourse(newCourse);
+              // If the new course exists, set the form values to the new course's values
               if (newCourse) {
                 formik.setValues({
                   id: newCourse ? newCourse.id : "",
@@ -424,6 +492,7 @@ function Courses() {
                   selectedCourse: value,
                 });
               } else {
+                // If the new course doesn't exist, reset the form values
                 formik.setValues({
                   id: 0,
                   name: "",
@@ -436,10 +505,12 @@ function Courses() {
               }
             }}
           />
+          {/* Button to clear the form */}
           <Button color="grey" type="button" onClick={() => formik.resetForm()}>
             Clear Form
           </Button>
         </GridRow>
+        {/* Display the edit course form */}
         {editCourseForm}
       </Grid>
     </>

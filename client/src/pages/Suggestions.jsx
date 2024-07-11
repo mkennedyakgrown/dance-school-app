@@ -12,6 +12,12 @@ import {
 import { useOutletContext, useNavigate } from "react-router-dom";
 import SuggestionRow from "../components/SuggestionRow";
 
+/**
+ * Component for displaying suggestions.
+ * Fetches suggestions, courses, disciplines, levels, and genders from the API.
+ * Allows for sorting suggestions by course, discipline, level, and gender.
+ * Displays a table with suggestions and allows for deleting suggestions.
+ */
 function Suggestions() {
   const [suggestions, setSuggestions] = useState([]);
   const [courses, setCourses] = useState([]);
@@ -25,11 +31,13 @@ function Suggestions() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect to login or reports page if user is not logged in or does not have admin role
     if (!user.email_address) {
       navigate("/login");
     } else if (!user.roles.map((r) => r.name).includes("Admin")) {
       navigate("/reports");
     }
+    // Fetch suggestions, courses, disciplines, levels, and genders from the API
     fetch("/api/suggestions")
       .then((r) => r.json())
       .then((data) => {
@@ -57,6 +65,10 @@ function Suggestions() {
       });
   }, []);
 
+  /**
+   * Deletes a suggestion from the state and the database.
+   * @param {number} suggestionId - The ID of the suggestion to delete.
+   */
   function handleDelete(suggestionId) {
     fetch(`/api/suggestions/${suggestionId}`, {
       method: "DELETE",
@@ -69,6 +81,7 @@ function Suggestions() {
       });
   }
 
+  // Generate options for dropdown menus
   const courseOptions =
     courses.length > 0
       ? courses.map((course) => {
@@ -113,6 +126,7 @@ function Suggestions() {
         })
       : [];
 
+  // Generate rows for each suggestion
   const suggestionRows =
     suggestions.length > 0
       ? suggestions.map((suggestion) => {
@@ -134,6 +148,9 @@ function Suggestions() {
         })
       : null;
 
+  /**
+   * Sorts suggestions by course name in ascending order.
+   */
   function sortSuggestionsByCourse() {
     const sortedSuggestions = [...suggestions];
     sortedSuggestions.sort((a, b) => {
@@ -149,6 +166,9 @@ function Suggestions() {
     setSortSelection("course");
   }
 
+  /**
+   * Sorts suggestions by discipline name in ascending order.
+   */
   function sortSuggestionsByDiscipline() {
     const sortedSuggestions = [...suggestions];
     sortedSuggestions.sort((a, b) => {
@@ -166,6 +186,9 @@ function Suggestions() {
     setSortSelection("discipline");
   }
 
+  /**
+   * Sorts suggestions by level name in ascending order.
+   */
   function sortSuggestionsByLevel() {
     const sortedSuggestions = [...suggestions];
     sortedSuggestions.sort((a, b) => {
@@ -183,6 +206,9 @@ function Suggestions() {
     setSortSelection("level");
   }
 
+  /**
+   * Sorts suggestions by gender name in ascending order.
+   */
   function sortSuggestionsByGender() {
     const sortedSuggestions = [...suggestions];
     sortedSuggestions.sort((a, b) => {

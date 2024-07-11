@@ -13,16 +13,23 @@ import * as yup from "yup";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import EmailEditForm from "../components/EmailEditForm";
 
+/**
+ * Emails component displays a form to send emails to students
+ * and also displays a list of approved emails.
+ */
 function Emails() {
+  // State variables
   const [students, setStudents] = useState([]);
   const [currStudent, setCurrStudent] = useState({});
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [isChanging, setIsChanging] = useState(false);
 
+  // Context variables
   const { user } = useOutletContext();
 
   const navigate = useNavigate();
 
+  // Fetch students data on component mount
   useEffect(() => {
     if (!user.email_address) {
       navigate("/login");
@@ -36,6 +43,7 @@ function Emails() {
       });
   }, []);
 
+  // Formik form configuration
   const formSchema = yup.object().shape({
     student: yup.object().nullable(),
     selectedEmail: yup.number(),
@@ -118,6 +126,7 @@ function Emails() {
     },
   });
 
+  // Function to handle opening popup
   function handleOpenPopup() {
     setPopupIsOpen(true);
     const timeout = setTimeout(() => {
@@ -125,6 +134,7 @@ function Emails() {
     }, 2000);
   }
 
+  // Generate dropdown options for students
   const StudentItems = students.map((student) => {
     return {
       key: student.id,
@@ -133,6 +143,7 @@ function Emails() {
     };
   });
 
+  // Generate list of approved emails
   const approvedStudentItems = students
     .filter((student) =>
       student.email.length > 0 ? student.email[0].approved : false
@@ -143,21 +154,27 @@ function Emails() {
       >{`${student.first_name} ${student.last_name}`}</List.Item>
     ));
 
+  // State variable to track whether form is changing
   const [editForm, setEditForm] = useState(null);
 
+  // If form is changing, wait for 10ms before rendering
   if (isChanging) {
     setTimeout(() => {
       setIsChanging(false);
     }, 10);
   }
 
+  // Render component
   return (
     <>
+      {/* Grid layout */}
       <Grid divided centered>
+        {/* Header */}
         <GridRow>
           <Header as="h1">Emails</Header>
         </GridRow>
         <GridRow columns={2} style={{ minHeight: "350px" }}>
+          {/* Dropdown for selecting student */}
           <GridColumn>
             <Header as="h2">Students</Header>
             <Dropdown
@@ -169,6 +186,8 @@ function Emails() {
               value={formik.values.selectedEmail}
               options={StudentItems}
               onChange={(e, { value }) => {
+                // Handle student selection
+                // ...
                 const student = students.find(
                   (student) => student.id === value
                 );
@@ -196,11 +215,13 @@ function Emails() {
               }}
             />
           </GridColumn>
+          {/* List of approved emails */}
           <GridColumn>
             <Header as="h2">Approved Emails</Header>
             <List style={{ maxHeight: "350px" }}>{approvedStudentItems}</List>
           </GridColumn>
         </GridRow>
+        {/* Form to send emails */}
         {!isChanging && (
           <EmailEditForm
             {...{ formik, currStudent, popupIsOpen, students, setStudents }}

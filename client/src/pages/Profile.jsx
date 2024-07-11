@@ -1,12 +1,16 @@
+// Import necessary hooks and components
 import { useOutletContext } from "react-router-dom";
 import { Button, Divider, Form, Grid } from "semantic-ui-react";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useEffect } from "react";
 
+// Define Profile component
 function Profile() {
+  // Get user data from outlet context
   const { user, setUser } = useOutletContext();
 
+  // Define form schema for user fields
   const formSchema = yup.object().shape({
     id: yup.number().required(),
     first_name: yup.string().required("First Name is required"),
@@ -14,6 +18,7 @@ function Profile() {
     email_address: yup.string().email("Invalid email address").required(),
   });
 
+  // Set up formik for user form
   const formik = useFormik({
     initialValues: {
       id: user.id,
@@ -23,6 +28,7 @@ function Profile() {
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
+      // Send PATCH request to API to update user data
       fetch(`/api/users/${user.id}`, {
         method: "PATCH",
         headers: {
@@ -32,11 +38,13 @@ function Profile() {
       })
         .then((r) => r.json())
         .then((data) => {
+          // Update user data in outlet context
           setUser(data);
         });
     },
   });
 
+  // Define password schema for form fields
   const passwordSchema = yup.object().shape({
     current_password: yup
       .string()
@@ -47,6 +55,7 @@ function Profile() {
       .oneOf([yup.ref("new_password"), null], "Passwords must match"),
   });
 
+  // Set up formik for password form
   const passwordFormik = useFormik({
     initialValues: {
       current_password: "",
@@ -55,6 +64,7 @@ function Profile() {
     },
     validationSchema: passwordSchema,
     onSubmit: (values) => {
+      // Send PATCH request to API to update user password
       fetch(`/api/users/${user.id}`, {
         method: "PATCH",
         headers: {
@@ -64,6 +74,7 @@ function Profile() {
       })
         .then((r) => r.json())
         .then((data) => {
+          // Display success or error message based on API response
           if (data.message === "Password changed") {
             alert("Password changed successfully");
             passwordFormik.setValues({
@@ -78,6 +89,7 @@ function Profile() {
     },
   });
 
+  // Update user data in formik when user data changes
   useEffect(() => {
     formik.setValues({
       id: user.id,
@@ -87,6 +99,7 @@ function Profile() {
     });
   }, [user]);
 
+  // Render user form and password form
   return (
     <>
       <h1>Profile</h1>
@@ -180,4 +193,5 @@ function Profile() {
   );
 }
 
+// Export Profile component
 export default Profile;

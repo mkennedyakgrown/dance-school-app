@@ -1,3 +1,4 @@
+// Import necessary React hooks and components
 import { useState, useEffect } from "react";
 import {
   Header,
@@ -12,32 +13,41 @@ import { useOutletContext, useNavigate } from "react-router-dom";
 import InstructorRow from "../components/InstructorRow";
 import InstructorRowNew from "../components/InstructorRowNew";
 
+// Define the Instructors component
 function Instructors() {
+  // Define state variables for instructors, courses, and roles
   const [instructors, setInstructors] = useState([]);
   const [courses, setCourses] = useState([]);
   const [roles, setRoles] = useState([]);
   const [sortSelection, setSortSelection] = useState("");
 
+  // Get user information from the router context
   const { user } = useOutletContext();
 
+  // Define a function to navigate to different pages
   const navigate = useNavigate();
 
+  // Use the useEffect hook to fetch data from the API on component mount
   useEffect(() => {
+    // If the user is not logged in, navigate to the login page
     if (!user.email_address) {
       navigate("/login");
     } else if (!user.roles.map((r) => r.name).includes("Admin")) {
       navigate("/reports");
     }
+    // Fetch instructors and update the state variable
     fetch("/api/users")
       .then((r) => r.json())
       .then((data) => {
         setInstructors(data);
       });
+    // Fetch courses and update the state variable
     fetch("/api/courses")
       .then((r) => r.json())
       .then((data) => {
         setCourses(data);
       });
+    // Fetch roles and update the state variable
     fetch("/api/roles")
       .then((r) => r.json())
       .then((data) => {
@@ -45,6 +55,7 @@ function Instructors() {
       });
   }, []);
 
+  // Create an array of dropdown options based on the courses state variable
   const courseOptions =
     courses.length > 0
       ? courses.map((course) => {
@@ -56,6 +67,7 @@ function Instructors() {
         })
       : [];
 
+  // Create an array of dropdown options based on the roles state variable
   const rolesOptions =
     roles.length > 0
       ? roles.map((role) => {
@@ -67,6 +79,7 @@ function Instructors() {
         })
       : [];
 
+  // Create an array of InstructorRow components based on the instructors state variable
   const instructorRows =
     instructors.length > 0
       ? instructors.map((instructor) => {
@@ -86,6 +99,7 @@ function Instructors() {
         })
       : [];
 
+  // Define a function to sort instructors by first name
   function sortInstructorsByFirstName() {
     const sortedInstructors = [...instructors];
     sortedInstructors.sort((a, b) => {
@@ -101,6 +115,7 @@ function Instructors() {
     setSortSelection("first_name");
   }
 
+  // Define a function to sort instructors by last name
   function sortInstructorsByLastName() {
     const sortedInstructors = [...instructors];
     sortedInstructors.sort((a, b) => {
@@ -116,6 +131,7 @@ function Instructors() {
     setSortSelection("last_name");
   }
 
+  // Render the Instructors component
   return (
     <>
       <Header as="h1">Instructors</Header>
@@ -157,4 +173,5 @@ function Instructors() {
   );
 }
 
+// Export the Instructors component
 export default Instructors;

@@ -3,7 +3,9 @@ import { useOutletContext, useNavigate } from "react-router-dom";
 import { Header } from "semantic-ui-react";
 import Admin from "./Admin.jsx";
 
+// Dashboard component for the admin dashboard page
 function Dashboard() {
+  // Get the user from the context
   const { user } = useOutletContext();
   const navigate = useNavigate();
 

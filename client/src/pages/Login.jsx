@@ -1,3 +1,4 @@
+// Import necessary hooks and components
 import { useState, useEffect } from "react";
 import { useOutletContext, useNavigate } from "react-router-dom";
 import {
@@ -11,24 +12,30 @@ import {
 import { useFormik } from "formik";
 import * as yup from "yup";
 
+// Define the Login component
 function Login() {
+  // Initialize state variables
   const [errors, setErrors] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // Get the user and setUser from the outlet context
   const { user, setUser } = useOutletContext();
   const navigate = useNavigate();
 
+  // Redirect to the home page if the user is already logged in
   useEffect(() => {
     if (user.email_address) {
       navigate("/", { replace: true });
     }
   }, [user]);
 
+  // Define the form schema for validation
   const formSchema = yup.object().shape({
     email_address: yup.string().email().required(),
     password: yup.string().required(),
   });
 
+  // Define formik configuration
   const formik = useFormik({
     initialValues: {
       email_address: "",
@@ -36,7 +43,9 @@ function Login() {
     },
     validationSchema: formSchema,
     onSubmit: (values) => {
+      // Set isLoading to true
       setIsLoading(true);
+      // Send a POST request to the login API
       fetch("/api/login", {
         method: "POST",
         headers: {
@@ -46,14 +55,17 @@ function Login() {
       })
         .then((r) => r.json())
         .then((data) => {
+          // If there are errors, set the errors state variable
           if (data.errors) {
             setErrors(data.errors);
           } else {
+            // Set the user state variable
             setUser(data);
           }
         })
         .catch((err) => console.log(err))
         .finally(() => {
+          // Reset the form, set isLoading to false, and navigate to the home page
           formik.resetForm();
           setIsLoading(false);
           navigate("/", { replace: true });
@@ -108,4 +120,5 @@ function Login() {
   );
 }
 
+// Export the Login component
 export default Login;

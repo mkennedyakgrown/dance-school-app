@@ -6,31 +6,41 @@ import { useOutletContext, useNavigate } from "react-router-dom";
 
 import EditStudentForm from "../components/EditStudentForm";
 
+// Component for managing students
 function Students() {
+  // State for students, courses, and genders
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
   const [genders, setGenders] = useState([]);
 
+  // User object from outlet context
   const { user } = useOutletContext();
 
+  // Navigate function for redirecting
   const navigate = useNavigate();
 
+  // Fetch students, courses, and genders on mount
   useEffect(() => {
     if (!user.email_address) {
+      // Redirect to login if user is not logged in
       navigate("/login");
     } else if (!user.roles.map((r) => r.name).includes("Admin")) {
+      // Redirect to reports if user is not an admin
       navigate("/reports");
     }
+    // Fetch students
     fetch("/api/students")
       .then((r) => r.json())
       .then((data) => {
         setStudents(data);
       });
+    // Fetch courses
     fetch("/api/courses")
       .then((r) => r.json())
       .then((data) => {
         setCourses(data);
       });
+    // Fetch genders
     fetch("/api/genders")
       .then((r) => r.json())
       .then((data) => {
@@ -38,6 +48,7 @@ function Students() {
       });
   }, []);
 
+  // Form schema for formik
   const formSchema = yup.object().shape({
     id: yup.number().required(),
     first_name: yup.string().required(),
@@ -51,6 +62,7 @@ function Students() {
     delete_placements: yup.array().of(yup.number()),
   });
 
+  // Formik instance for student form
   const formik = useFormik({
     initialValues: {
       id: null,
@@ -67,6 +79,7 @@ function Students() {
     validationSchema: formSchema,
     onSubmit: (values) => {
       if (values.id != 0) {
+        // Patch student if id is not 0
         fetch(`/api/students/${values.id}`, {
           method: "PATCH",
           headers: {
@@ -76,6 +89,7 @@ function Students() {
         })
           .then((r) => r.json())
           .then((data) => {
+            // Update state with new student data
             setStudents(
               students.map((student) => {
                 if (student.id === data.id) {
@@ -85,6 +99,7 @@ function Students() {
                 }
               })
             );
+            // Set formik values to new student data
             formik.setValues({
               key: data.id,
               text: `${data.first_name} ${data.last_name}`,
@@ -105,9 +120,11 @@ function Students() {
               }),
               delete_placements: [],
             });
+            // Alert success
             alert("Student changes saved successfully!");
           });
       } else {
+        // Post new student if id is 0
         fetch("/api/students", {
           method: "POST",
           headers: {
@@ -117,7 +134,9 @@ function Students() {
         })
           .then((r) => r.json())
           .then((data) => {
+            // Add new student to state
             setStudents([...students, data]);
+            // Set formik values to new student data
             formik.setValues({
               key: data.id,
               text: `${data.first_name} ${data.last_name}`,
@@ -138,6 +157,7 @@ function Students() {
               }),
               delete_placements: [],
             });
+            // Alert success
             alert(
               `Student ${data.first_name} ${data.last_name} created successfully!`
             );
@@ -146,6 +166,7 @@ function Students() {
     },
   });
 
+  // Dropdown options for selecting a student
   const studentOptions = [
     {
       key: 0,
@@ -188,6 +209,7 @@ function Students() {
       : []),
   ];
 
+  // Return JSX for page
   return (
     <>
       <Header as="h1">Students</Header>
