@@ -1,17 +1,14 @@
 import { useState, useEffect } from "react";
-import { Form, Grid, GridColumn, GridRow } from "semantic-ui-react";
+import { Button, Form, Grid, GridColumn, GridRow } from "semantic-ui-react";
 import EmailTextEditor from "./EmailTextEditor";
 
-function EmailEditForm({ formik, currStudent }) {
-  const [popupIsOpen, setPopupIsOpen] = useState(false);
-
-  function handleOpenPopup() {
-    setPopupIsOpen(true);
-    const timeout = setTimeout(() => {
-      setPopupIsOpen(false);
-    }, 2000);
-  }
-
+function EmailEditForm({
+  formik,
+  currStudent,
+  popupIsOpen,
+  students,
+  setStudents,
+}) {
   const placements = currStudent.placements
     ? currStudent.placements.map((placement) => {
         return {
@@ -124,22 +121,60 @@ function EmailEditForm({ formik, currStudent }) {
         .reduce((acc, curr) => [...acc, ...curr], [])
     : [];
 
-  const EmailBody = currStudent.email
-    ? currStudent.email[0].content_json
-    : JSON.stringify({
-        root: {
-          children: placements.length > 0 ? [...placements, ...reports] : [],
-          direction: "ltr",
-          format: "center",
-          indent: 0,
-          type: "root",
-          version: 1,
-        },
+  const newEmailBody = JSON.stringify({
+    root: {
+      children: placements.length > 0 ? [...placements, ...reports] : [],
+      direction: "ltr",
+      format: "center",
+      indent: 0,
+      type: "root",
+      version: 1,
+    },
+  });
+
+  const emailBody = currStudent.email
+    ? currStudent.email.length > 0
+      ? currStudent.email[0].content_json
+      : newEmailBody
+    : newEmailBody;
+
+  const approveButton = (
+    <Button color="green" onClick={() => approveEmail(currStudent.email[0].id)}>
+      Approve Email
+    </Button>
+  );
+
+  function approveEmail(id) {
+    fetch(`/api/emails/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        approved: true,
+      }),
+    })
+      .then((r) => r.json())
+      .then((data) => {
+        console.log(data);
+        setStudents(
+          students.map((student) => {
+            if (student.id === data.student_id) {
+              return {
+                ...student,
+                email: data,
+              };
+            } else {
+              return student;
+            }
+          })
+        );
       });
+  }
 
   const textEditor =
     formik.values.selectedEmail === 0 ? null : (
-      <EmailTextEditor {...{ formik, popupIsOpen, EmailBody }} />
+      <EmailTextEditor {...{ formik, popupIsOpen, emailBody, approveButton }} />
     );
 
   return (
@@ -161,6 +196,9 @@ function EmailEditForm({ formik, currStudent }) {
           value={formik.values.secondary_email_address}
           onChange={formik.handleChange}
         />
+      </GridRow>
+      <GridRow>
+        {formik.values.selectedEmail === 0 ? null : approveButton}
       </GridRow>
       <GridRow>
         <GridColumn width={16}>{textEditor}</GridColumn>

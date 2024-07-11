@@ -574,7 +574,8 @@ class EmailById(Resource):
     if json.get('content_json'):
       email.content_json = json.get('content_json')
     if json.get('approved'):
-      email.approved = json.get('approved') if json.get('approved') is type(bool) else False
+      if type(json.get('approved')) is bool:
+        email.approved = True
     email.date = datetime.now()
     db.session.commit()
     return email_schema.dump(email), 200

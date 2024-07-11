@@ -12,7 +12,7 @@ import "../styles.css";
 import TextEditorSaveButton from "./TextEditorSaveButton";
 import { Popup } from "semantic-ui-react";
 
-function EmailTextEditor({ formik, popupIsOpen, EmailBody }) {
+function EmailTextEditor({ formik, popupIsOpen, emailBody, approveButton }) {
   const [editorState, setEditorState] = useState(null);
 
   function onChange(editorState) {
@@ -36,13 +36,13 @@ function EmailTextEditor({ formik, popupIsOpen, EmailBody }) {
   const emptyEditorState =
     '{"root":{"children":[{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0}],"direction":null,"format":"","indent":0,"type":"root","version":1}}';
 
+  console.log(formik.values);
   return (
     <LexicalComposer
       initialConfig={{
         ...editorConfig,
-        editorState: Object.keys(EmailBody).includes("root")
-          ? emptyEditorState
-          : EmailBody,
+        editorState: emailBody.length > 0 ? emailBody : emptyEditorState,
+        selection: null,
       }}
     >
       <div className="editor-container">
@@ -65,6 +65,7 @@ function EmailTextEditor({ formik, popupIsOpen, EmailBody }) {
             content="Saved!"
             position="right center"
           />
+          {approveButton}
         </div>
       </div>
     </LexicalComposer>
