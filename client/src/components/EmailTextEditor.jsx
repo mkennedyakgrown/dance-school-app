@@ -47,6 +47,13 @@ function EmailTextEditor({ formik, popupIsOpen, emailBody, approveButton }) {
     >
       <div className="editor-container">
         <ToolbarPlugin editorType={"email"} />
+        <Popup
+          open={popupIsOpen}
+          trigger={<TextEditorSaveButton formik={formik} />}
+          content="Saved!"
+          position="right center"
+        />
+        {formik.values.id === 0 ? null : approveButton}
         <div className="editor-inner">
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
@@ -58,14 +65,6 @@ function EmailTextEditor({ formik, popupIsOpen, emailBody, approveButton }) {
           <HistoryPlugin />
           <AutoFocusPlugin />
           <OnChangePlugin onChange={onChange} />
-
-          <Popup
-            open={popupIsOpen}
-            trigger={<TextEditorSaveButton formik={formik} />}
-            content="Saved!"
-            position="right center"
-          />
-          {formik.values.id === 0 ? null : approveButton}
         </div>
       </div>
     </LexicalComposer>

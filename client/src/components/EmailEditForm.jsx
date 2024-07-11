@@ -9,6 +9,47 @@ function EmailEditForm({
   students,
   setStudents,
 }) {
+  const paragraphSchema = {
+    children: [
+      {
+        detail: 0,
+        format: 1,
+        mode: "normal",
+        style: "center",
+        text: "",
+        type: "text",
+        version: 1,
+      },
+    ],
+    direction: "ltr",
+    format: "center",
+    indent: 0,
+    type: "paragraph",
+    version: 1,
+    textFormat: 1,
+  };
+  const emptyParagraph = {
+    ...paragraphSchema,
+    children: [{ ...paragraphSchema, children: [] }],
+  };
+  const openingParagraph = {
+    ...paragraphSchema,
+    children: [
+      {
+        ...paragraphSchema.children[0],
+        text: `Below is a list of classes for the 2024|2025 season that ${currStudent.first_name} ${currStudent.last_name} is eligible to register for:`,
+      },
+    ],
+  };
+  const reportsParagraph = {
+    ...paragraphSchema,
+    children: [
+      {
+        ...paragraphSchema.children[0],
+        text: `Notes from their 2024|2025 instructor(s):`,
+      },
+    ],
+  };
   const placements = currStudent.placements
     ? currStudent.placements.map((placement) => {
         return {
@@ -61,25 +102,6 @@ function EmailEditForm({
   const reports = currStudent.student_reports
     ? currStudent.student_reports
         .map((report) => {
-          const paragraphSchema = {
-            children: [
-              {
-                detail: 0,
-                format: 1,
-                mode: "normal",
-                style: "",
-                text: "",
-                type: "text",
-                version: 1,
-              },
-            ],
-            direction: "ltr",
-            format: "center",
-            indent: 0,
-            type: "paragraph",
-            version: 1,
-            textFormat: 1,
-          };
           const courseName = {
             ...paragraphSchema,
             children: [
@@ -104,10 +126,6 @@ function EmailEditForm({
           const courseReportText = JSON.parse(courseReport.content_json).root
             .children[0];
           const reportText = JSON.parse(report.content_json).root.children;
-          const emptyParagraph = {
-            ...paragraphSchema,
-            children: [{ ...paragraphSchema, children: [] }],
-          };
           return [
             courseName,
             emptyParagraph,
@@ -123,7 +141,18 @@ function EmailEditForm({
 
   const newEmailBody = JSON.stringify({
     root: {
-      children: placements.length > 0 ? [...placements, ...reports] : [],
+      children:
+        placements.length > 0
+          ? [
+              openingParagraph,
+              emptyParagraph,
+              ...placements,
+              emptyParagraph,
+              reportsParagraph,
+              emptyParagraph,
+              ...reports,
+            ]
+          : [],
       direction: "ltr",
       format: "center",
       indent: 0,
@@ -198,9 +227,7 @@ function EmailEditForm({
         />
       </GridRow>
       <GridRow>{formik.values.id === 0 ? null : approveButton}</GridRow>
-      <GridRow>
-        <GridColumn width={16}>{textEditor}</GridColumn>
-      </GridRow>
+      <GridRow>{textEditor}</GridRow>
     </Form>
   );
 }

@@ -145,7 +145,7 @@ function Emails() {
 
   return (
     <>
-      <Grid divided centered widths="equal">
+      <Grid divided centered>
         <GridRow>
           <Header as="h1">Emails</Header>
         </GridRow>
