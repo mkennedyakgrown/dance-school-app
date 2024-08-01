@@ -13,7 +13,7 @@ class User(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(20), nullable=False)
     last_name = db.Column(db.String(20), nullable=False)
-    email_address = db.Column(db.String(20), unique=True, nullable=False)
+    email_address = db.Column(db.String(30), unique=True, nullable=False)
     _password_hash = db.Column(db.String(60), nullable=False)
 
     roles = db.relationship('Role', secondary='users_roles', back_populates='users')

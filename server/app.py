@@ -820,7 +820,7 @@ api.add_resource(Suggestions, '/suggestions')
 api.add_resource(SuggestionById, '/suggestions/<int:suggestion_id>')
 
 
-class UserSchema(ma.SQLAlchemySchema):
+class UserSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = User
@@ -838,7 +838,7 @@ class UserSchema(ma.SQLAlchemySchema):
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
 
-class RoleSchema(ma.SQLAlchemySchema):
+class RoleSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Role
@@ -852,7 +852,7 @@ class RoleSchema(ma.SQLAlchemySchema):
 role_schema = RoleSchema()
 roles_schema = RoleSchema(many=True)
 
-class CourseSchema(ma.SQLAlchemySchema):
+class CourseSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Course
@@ -871,7 +871,7 @@ class CourseSchema(ma.SQLAlchemySchema):
 course_schema = CourseSchema()
 courses_schema = CourseSchema(many=True)
 
-class DisciplineSchema(ma.SQLAlchemySchema):
+class DisciplineSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Discipline
@@ -884,7 +884,7 @@ class DisciplineSchema(ma.SQLAlchemySchema):
 discipline_schema = DisciplineSchema()
 disciplines_schema = DisciplineSchema(many=True)
 
-class LevelSchema(ma.SQLAlchemySchema):
+class LevelSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Level
@@ -897,7 +897,7 @@ class LevelSchema(ma.SQLAlchemySchema):
 level_schema = LevelSchema()
 levels_schema = LevelSchema(many=True)
 
-class StudentSchema(ma.SQLAlchemySchema):
+class StudentSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Student
@@ -918,7 +918,7 @@ class StudentSchema(ma.SQLAlchemySchema):
 student_schema = StudentSchema()
 students_schema = StudentSchema(many=True)
 
-class GenderSchema(ma.SQLAlchemySchema):
+class GenderSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Gender
@@ -931,7 +931,7 @@ class GenderSchema(ma.SQLAlchemySchema):
 gender_schema = GenderSchema()
 genders_schema = GenderSchema(many=True)
 
-class StudentReportSchema(ma.SQLAlchemySchema):
+class StudentReportSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = StudentReport
@@ -949,7 +949,7 @@ class StudentReportSchema(ma.SQLAlchemySchema):
 student_report_schema = StudentReportSchema()
 student_reports_schema = StudentReportSchema(many=True)
 
-class CourseReportSchema(ma.SQLAlchemySchema):
+class CourseReportSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = CourseReport
@@ -966,7 +966,7 @@ class CourseReportSchema(ma.SQLAlchemySchema):
 course_report_schema = CourseReportSchema()
 course_reports_schema = CourseReportSchema(many=True)
 
-class PlacementSchema(ma.SQLAlchemySchema):
+class PlacementSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Placement
@@ -980,7 +980,7 @@ class PlacementSchema(ma.SQLAlchemySchema):
 placement_schema = PlacementSchema()
 placements_schema = PlacementSchema(many=True)
 
-class SuggestionSchema(ma.SQLAlchemySchema):
+class SuggestionSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Suggestion
@@ -995,7 +995,7 @@ class SuggestionSchema(ma.SQLAlchemySchema):
 suggestion_schema = SuggestionSchema()
 suggestions_schema = SuggestionSchema(many=True)
 
-class TemplateSchema(ma.SQLAlchemySchema):
+class TemplateSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Template
@@ -1008,7 +1008,7 @@ class TemplateSchema(ma.SQLAlchemySchema):
 template_schema = TemplateSchema()
 templates_schema = TemplateSchema(many=True)
 
-class EmailSchema(ma.SQLAlchemySchema):
+class EmailSchema(ma.SQLAlchemyAutoSchema):
 
   class Meta:
     model = Email
